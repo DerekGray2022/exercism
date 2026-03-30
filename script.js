@@ -41,7 +41,7 @@ class Cipher {
     let y = 0;
     for (let x = 0; x < keyCode.length; x++) {
       // Check for cipherKey overflow
-      if (y === keyCode.length) y = 0;
+      if (y === this.cipherKey.length) y = 0;
       // Message charCode
       const shiftee = utf8encoder.encode(keyCode)[x];
       // Cipher charCode
@@ -75,7 +75,7 @@ class Cipher {
 // -------------    Random key cipher   --------------
 
 // can encode
-const cipher = new Cipher();
+let cipher = new Cipher();
 const res0 = cipher.encode("aaaaaaaaaa"); //  .toEqual(cipher.key.substring(0, 10));
 
 // can decode
@@ -83,47 +83,46 @@ const res1 = cipher.decode(cipher.key.substring(0, 10)); //  .toEqual('aaaaaaaaa
 
 // is reversible
 const plaintext = "abcdefghij";
-const enc = cipher.encode(plaintext)
+const enc = cipher.encode(plaintext);
 const res2 = cipher.decode(enc); //  .toEqual(plaintext);
 
-// // key is made only of lowercase letters
-// const res3 = Boolean(cipher1.key.match(/^[a-z]+$/)); //  .toMatch(/^[a-z]+$/);
+// key is made only of lowercase letters
+const res3 = Boolean(cipher.key.match(/^[a-z]+$/)); //  .toMatch(/^[a-z]+$/);
 
-// // // -------------    Substitution cipher   --------------
+// // -------------    Substitution cipher   --------------
 
-// // can encode
-// const key = "abcdefghij";
-// const cipher2 = new Cipher(key);
-// const res4 = cipher2.encode("aaaaaaaaaa"); //  .toEqual('abcdefghij');
+// can encode
+const key = "abcdefghij";
+cipher = new Cipher(key);
 
-// // can decode
-// const res5 = cipher2.decode("abcdefghij"); //  .toEqual('aaaaaaaaaa');
+const res4 = cipher.encode("aaaaaaaaaa"); //  .toEqual('abcdefghij');
 
-// // is reversible
-// const cipher3 = new Cipher(key);
-// const res6 = cipher3.decode(cipher3.encode("abcdefghij")); //  .toEqual('abcdefghij');
+// can decode
+const res5 = cipher.decode("abcdefghij"); //  .toEqual('aaaaaaaaaa');
 
-// // can double shift encode
-// const res7 = new Cipher("iamapandabear").encode("iamapandabear")    //  .toEqual("qayaeaagaciai");
+// is reversible
+const res6 = cipher.decode(cipher.encode("abcdefghij")); //  .toEqual('abcdefghij');
 
-// // can wrap on encode
-// const cipher4 = new Cipher(key);
-// const res8 = cipher4.encode('zzzzzzzzzz')   //  .toEqual('zabcdefghi');
+// can double shift encode
+const res7 = new Cipher("iamapandabear").encode("iamapandabear"); //  .toEqual("qayaeaagaciai");
 
-// // can wrap on decode
-// const res9 = cipher4.decode('zabcdefghi')   //  .toEqual('zzzzzzzzzz');
+// can wrap on encode
+const res8 = cipher.encode("zzzzzzzzzz"); //  .toEqual('zabcdefghi');
 
-// // can encode messages longer than the key
-// const res10 = new Cipher('abc').encode('iamapandabear') //  .toEqual('iboaqcnecbfcr');
+// can wrap on decode
+const res9 = cipher.decode("zabcdefghi"); //  .toEqual('zzzzzzzzzz');
+
+// can encode messages longer than the key
+const res10 = new Cipher('abc').encode('iamapandabear') //  .toEqual('iboaqcnecbfcr');
 
 console.log(res0);
 console.log(res1);
 console.log(res2);
-// console.log(res3);
-// console.log(res4);
-// console.log(res5);
-// console.log(res6);
-// console.log(res7);
-// console.log(res8);
-// console.log(res9);
-// console.log(res10);
+console.log(res3);
+console.log(res4);
+console.log(res5);
+console.log(res6);
+console.log(res7);
+console.log(res8);
+console.log(res9);
+console.log(res10);
