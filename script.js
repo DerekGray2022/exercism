@@ -41,13 +41,13 @@ class Cipher {
 
   decode(keyCode) {
     let y = 0;
-    for (let x = 0; x < this.encoded.length; x++) {
+    for (let x = 0; x < keyCode.length; x++) {
       // Check for cipherKey overflow
       if (y === keyCode.length) y = 0;
       // Message charCode
-      const shiftee = utf8encoder.encode(this.encoded)[x];
+      const shiftee = utf8encoder.encode(keyCode)[x];
       // Cipher charCode
-      const shifter = utf8encoder.encode(keyCode)[y] - 97;
+      const shifter = utf8encoder.encode(this.cipherKey)[y] - 97;
       // New cipher charCode
       let res = shiftee - shifter;
       //   Check for alpha overflow
@@ -83,10 +83,11 @@ const res0 = cipher0.encode("aaaaaaaaaa"); //  .toEqual(cipher.key.substring(0, 
 // can decode
 const res1 = cipher0.decode(cipher0.key.substring(0, 10)); //  .toEqual('aaaaaaaaaa');
 
-// // is reversible
-// const cipher1 = new Cipher();
-// const plaintext = "abcdefghij";
-// const res2 = cipher1.decode(cipher1.encode(plaintext)); //  .toEqual(plaintext);
+// is reversible
+const cipher1 = new Cipher();
+const plaintext = "abcdefghij";
+const enc = cipher1.encode(plaintext)
+const res2 = cipher1.decode(enc); //  .toEqual(plaintext);
 
 // // key is made only of lowercase letters
 // const res3 = Boolean(cipher1.key.match(/^[a-z]+$/)); //  .toMatch(/^[a-z]+$/);
@@ -120,7 +121,7 @@ const res1 = cipher0.decode(cipher0.key.substring(0, 10)); //  .toEqual('aaaaaaa
 
 console.log(res0);
 console.log(res1);
-// console.log(res2);
+console.log(res2);
 // console.log(res3);
 // console.log(res4);
 // console.log(res5);
