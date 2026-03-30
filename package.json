@@ -1,0 +1,15 @@
+{
+    "name": "exercism",
+    "version": "1.0.0",
+    "description": "",
+    "license": "ISC",
+    "author": "",
+    "type": "module",
+    "main": "script.js",
+    "scripts": {
+        "test": "jest"
+    },
+    "dependencies": {
+        "jest": "^30.3.0"
+    }
+}
