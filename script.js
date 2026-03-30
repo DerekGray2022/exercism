@@ -89,44 +89,44 @@ const plaintext = "abcdefghij";
 const enc = cipher1.encode(plaintext)
 const res2 = cipher1.decode(enc); //  .toEqual(plaintext);
 
-// // key is made only of lowercase letters
-// const res3 = Boolean(cipher1.key.match(/^[a-z]+$/)); //  .toMatch(/^[a-z]+$/);
+// key is made only of lowercase letters
+const res3 = Boolean(cipher1.key.match(/^[a-z]+$/)); //  .toMatch(/^[a-z]+$/);
 
 // // -------------    Substitution cipher   --------------
 
-// // can encode
-// const key = "abcdefghij";
-// const cipher2 = new Cipher(key);
-// const res4 = cipher2.encode("aaaaaaaaaa"); //  .toEqual('abcdefghij');
+// can encode
+const key = "abcdefghij";
+const cipher2 = new Cipher(key);
+const res4 = cipher2.encode("aaaaaaaaaa"); //  .toEqual('abcdefghij');
 
-// // can decode
-// const res5 = cipher2.decode("abcdefghij"); //  .toEqual('aaaaaaaaaa');
+// can decode
+const res5 = cipher2.decode("abcdefghij"); //  .toEqual('aaaaaaaaaa');
 
-// // is reversible
-// const cipher3 = new Cipher(key);
-// const res6 = cipher3.decode(cipher3.encode("abcdefghij")); //  .toEqual('abcdefghij');
+// is reversible
+const cipher3 = new Cipher(key);
+const res6 = cipher3.decode(cipher3.encode("abcdefghij")); //  .toEqual('abcdefghij');
 
-// // can double shift encode
-// const res7 = new Cipher("iamapandabear").encode("iamapandabear")    //  .toEqual("qayaeaagaciai");
+// can double shift encode
+const res7 = new Cipher("iamapandabear").encode("iamapandabear")    //  .toEqual("qayaeaagaciai");
 
-// // can wrap on encode
-// const cipher4 = new Cipher(key);
-// const res8 = cipher4.encode('zzzzzzzzzz')   //  .toEqual('zabcdefghi');
+// can wrap on encode
+const cipher4 = new Cipher(key);
+const res8 = cipher4.encode('zzzzzzzzzz')   //  .toEqual('zabcdefghi');
 
-// // can wrap on decode
-// const res9 = cipher4.decode('zabcdefghi')   //  .toEqual('zzzzzzzzzz');
+// can wrap on decode
+const res9 = cipher4.decode('zabcdefghi')   //  .toEqual('zzzzzzzzzz');
 
-// // can encode messages longer than the key
-// const res10 = new Cipher('abc').encode('iamapandabear') //  .toEqual('iboaqcnecbfcr');
+// can encode messages longer than the key
+const res10 = new Cipher('abc').encode('iamapandabear') //  .toEqual('iboaqcnecbfcr');
 
 console.log(res0);
 console.log(res1);
 console.log(res2);
-// console.log(res3);
-// console.log(res4);
-// console.log(res5);
-// console.log(res6);
-// console.log(res7);
-// console.log(res8);
-// console.log(res9);
-// console.log(res10);
+console.log(res3);
+console.log(res4);
+console.log(res5);
+console.log(res6);
+console.log(res7);
+console.log(res8);
+console.log(res9);
+console.log(res10);
