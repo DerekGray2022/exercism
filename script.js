@@ -1,128 +1,141 @@
-// a-z charCodes => 97 - 122
-const utf8encoder = new TextEncoder();
+// go
 
-class Cipher {
-  constructor(cipherKey) {
-    this.cipherKey = cipherKey ? cipherKey : this.key;
-    this.message = "";
-    this.encoded = "";
-    this.decoded = "";
-  }
+const answer = (req) => {
+  //#region Collect useable data from req
+  const regNumber = /-?\d+/g;
+  const regOperator = /plus|minus|multiplied|divided/gi;
 
-  encode(message) {
-    this.encoded = "";
-    message && (this.message = message);
-    let y = 0;
+  let resNumber = req.match(regNumber);
+  let resOperator = req.match(regOperator);
 
-    for (let x = 0; x < this.message.length; x++) {
-      // Check for cipherKey overflow
-      if (y === this.cipherKey.length) y = 0;
-      //   let y = x;
-      // Message charCode
-      const shiftee = utf8encoder.encode(this.message)[x];
-      // Cipher charCode
-      const shifter = utf8encoder.encode(this.cipherKey)[y] - 97;
-      // New cipher charCode
-      let res = shiftee + shifter;
-      //   Check for alpha overflow
-      if (res > 122) {
-        res = res - 122;
-        res = 96 + res;
-      }
-      //   New cipher char
-      this.encoded += String.fromCharCode(res);
-      y++;
-    }
-    return this.encoded;
-  }
+  let data = {
+    number: resNumber,
+    operator: resOperator,
+  };
+  //#endregion
 
-  decode(keyCode) {
-    this.decoded = "";
-    let y = 0;
-    for (let x = 0; x < keyCode.length; x++) {
-      // Check for cipherKey overflow
-      if (y === this.cipherKey.length) y = 0;
-      // Message charCode
-      const shiftee = utf8encoder.encode(keyCode)[x];
-      // Cipher charCode
-      const shifter = utf8encoder.encode(this.cipherKey)[y] - 97;
-      // New cipher charCode
-      let res = shiftee - shifter;
-      //   Check for alpha overflow
-      if (res < 97) {
-        res = 97 - res;
-        res = 123 - res;
-      }
-      //   New cipher char
-      this.decoded += String.fromCharCode(res);
-      y++;
-    }
-    return this.decoded;
-  }
+  const numbers = data.number;
+  const operators = data.operator;
 
-  get key() {
-    if (this.cipherKey) return this.cipherKey;
+  //#region Return just a number
+  if (operators === null) return numbers;
+  //#endregion
+  
 
-    let randKey = "";
-    for (let x = 0; x < 100; x++) {
-      const num = parseInt(Math.random() * 25 + 97);
-      randKey += String.fromCharCode(num);
-    }
-    return randKey;
-  }
-}
+  // return data;
+};
 
-// -------------    Random key cipher   --------------
+// // just a number
+// const res1 = answer("What is 5?"); //  .toEqual(5);
 
-// can encode
-let cipher = new Cipher();
-const res0 = cipher.encode("aaaaaaaaaa"); //  .toEqual(cipher.key.substring(0, 10));
+// // just a zero
+// const res2 = answer("What is 0?"); //  .toEqual(0);
 
-// can decode
-const res1 = cipher.decode(cipher.key.substring(0, 10)); //  .toEqual('aaaaaaaaaa');
+// // just a negative number
+// const res3 = answer("What is -123?"); //  .toEqual(-123);
 
-// is reversible
-const plaintext = "abcdefghij";
-const enc = cipher.encode(plaintext);
-const res2 = cipher.decode(enc); //  .toEqual(plaintext);
+// addition
+const res4 = answer("What is 1 plus 1 minus 2?"); //  .toEqual(2);
 
-// key is made only of lowercase letters
-const res3 = Boolean(cipher.key.match(/^[a-z]+$/)); //  .toMatch(/^[a-z]+$/);
+// // addition with a left hand zero
+// const res5 = answer("What is 0 plus 2?"); //  .toEqual(2);
 
-// // -------------    Substitution cipher   --------------
+// // addition with a right hand zero
+// const res6 = answer("What is 3 plus 0?"); //  .toEqual(3);
 
-// can encode
-const key = "abcdefghij";
-cipher = new Cipher(key);
+// // more addition
+// const res7 = answer("What is 53 plus 2?"); //  .toEqual(55);
 
-const res4 = cipher.encode("aaaaaaaaaa"); //  .toEqual('abcdefghij');
+// // addition with negative numbers
+// const res8 = answer("What is -1 plus -10?"); //  .toEqual(-11);
 
-// can decode
-const res5 = cipher.decode("abcdefghij"); //  .toEqual('aaaaaaaaaa');
+// // large addition
+// const res9 = answer("What is 123 plus 45678?"); //  .toEqual(45801);
 
-// is reversible
-const res6 = cipher.decode(cipher.encode("abcdefghij")); //  .toEqual('abcdefghij');
+// // subtraction
+// const res10 = answer("What is 4 minus -12?"); //  .toEqual(16);
 
-// can double shift encode
-const res7 = new Cipher("iamapandabear").encode("iamapandabear"); //  .toEqual("qayaeaagaciai");
+// // multiplication
+// const res11 = answer("What is -3 multiplied by 25?"); //  .toEqual(-75);
 
-// can wrap on encode
-const res8 = cipher.encode("zzzzzzzzzz"); //  .toEqual('zabcdefghi');
+// // division
+// const res12 = answer("What is 33 divided by -3?"); //  .toEqual(-11);
 
-// can wrap on decode
-const res9 = cipher.decode("zabcdefghi"); //  .toEqual('zzzzzzzzzz');
+// // multiple additions
+// const res13 = answer("What is 1 plus 1 plus 1?"); //  .toEqual(3);
 
-// can encode messages longer than the key
-const res10 = new Cipher('abc').encode('iamapandabear') //  .toEqual('iboaqcnecbfcr');
+// // addition and subtraction
+// const res14 = answer("What is 1 plus 5 minus -2?"); //  .toEqual(8);
 
-console.log(res0);
-console.log(res1);
-console.log(res2);
-console.log(res3);
+// // multiple subtraction
+// const res15 = answer("What is 20 minus 4 minus 13?"); //  .toEqual(3);
+
+// // subtraction then addition
+// const res16 = answer("What is 17 minus 6 plus 3?"); //  .toEqual(14);
+
+// // multiple multiplication
+// const res17 = answer("What is 2 multiplied by -2 multiplied by 3?"); //  .toEqual(-12);
+
+// // addition and multiplication
+// const res18 = answer("What is -3 plus 7 multiplied by -2?"); //  .toEqual(-8);
+
+// // multiple division
+// const res19 = answer("What is -12 divided by 2 divided by -3?"); //  .toEqual(2);
+
+// // unknown operation
+// const res20 = () =>
+//   answer("What is 52 cubed?"); /* .toThrow(new Error("Unknown operation"), */
+
+// // Non math question
+// const res21 = () =>
+//   answer(
+//     "Who is the President of the United States?",
+//   ); /* .toThrow(new Error("Unknown operation"), */
+
+// // reject problem missing an operand
+// const res22 = () => answer("What is 1 plus?"); //  .toThrow(new Error('Syntax error'));
+
+// // reject problem with no operands or operators
+// const res23 = () => answer("What is?"); //  .toThrow(new Error('Syntax error'));
+
+// // reject two operations in a row
+// const res24 = () =>
+//   answer("What is 1 plus plus 2?"); /* .toThrow(new Error("Syntax error"), */
+
+// // reject two numbers in a row
+// const res25 = () =>
+//   answer("What is 1 plus 2 1?"); /* .toThrow(new Error("Syntax error") */
+
+// // reject postfix notation
+// const res26 = () => answer("What is 1 2 plus?"); //  .toThrow(new Error("Syntax error"));
+
+// // reject prefix notation
+// const res27 = () => answer("What is plus 1 2?")  //  .toThrow(new Error("Syntax error");
+
+// console.log(res1);
+// console.log(res2);
+// console.log(res3);
 console.log(res4);
-console.log(res5);
-console.log(res6);
-console.log(res7);
-console.log(res8);
-console.log(res9);
-console.log(res10);
+// console.log(res5);
+// console.log(res6);
+// console.log(res7);
+// console.log(res8);
+// console.log(res9);
+// console.log(res10);
+// console.log(res11);
+// console.log(res12);
+// console.log(res13);
+// console.log(res14);
+// console.log(res15);
+// console.log(res16);
+// console.log(res17);
+// console.log(res18);
+// console.log(res19);
+// console.log(res20());
+// console.log(res21());
+// console.log(res22());
+// console.log(res23());
+// console.log(res24());
+// console.log(res25());
+// console.log(res26());
+// console.log(res27());
