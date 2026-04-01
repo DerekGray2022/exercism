@@ -1,29 +1,23 @@
-let str = "What is 1 2 plus?";
-let num = str.match(/-?\d+/g);
-let op = str.match(/plus|minus|multiplied|divided/gi);
-let arr = [];
 
-for (let x = 0; x < num.length; x++) {
-  let temp = [];
-  temp.push(num[x]);
-  temp.push(str.indexOf(num[x]));
-  arr.push(temp);
 
-  if (x < num.length - 1) {
-    let temp = [];
-    temp.push(op[x]);
-    temp.push(str.indexOf(op[x]));
-    arr.push(temp);
-  }
+
+// Source - https://stackoverflow.com/a/16155417
+// Posted by fernandosavio, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-04-01, License - CC BY-SA 4.0
+
+function dec2bin(dec) {
+  return (dec >>> 0).toString(2);
 }
 
-arr.sort(compareIndices);
+console.log(dec2bin(24)); // 1
+// console.log(dec2bin(-1)); // 11111111111111111111111111111111
+// console.log(dec2bin(256)); // 100000000
+// console.log(dec2bin(-256)); // 11111111111111111111111100000000
 
-console.log(arr);
-console.log(num);
-// console.log(num1);
 
-// let num = eval('1 + 1');
-// console.log(num);
 
-function compareIndices(a, b) {return a[1] - b[1]};
+
+
+
+
+
