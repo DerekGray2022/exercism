@@ -1,99 +1,58 @@
 // go
 
-// 00001 = wink
-// 00010 = double blink
-// 00100 = close your eyes
-// 01000 = jump
-// 10000 = Reverse the order of the operations in the secret handshake.
+// A leap year (in the Gregorian calendar) occurs:
 
-// function bitReverse() {
-//   codeArray = codeArray.pop();
-//   return codeArray;
-//   codeArray = codeArray.reverse();
-// }
+//     In every year that is evenly divisible by 4.
+//     Unless the year is evenly divisible by 100, in which case it's only a leap year if the year is also evenly divisible by 400.
 
-const dec2bin = (dec) => {
-  return (dec >>> 0).toString(2);
-};
+// Some examples:
 
-const commands = (num) => {
-  let codeArray = [];
-  let bitArray = [];
-  const responses = {
-    0: "wink",
-    1: "double blink",
-    2: "close your eyes",
-    3: "jump",
-    4: null
-  };
-  //#region 
-  let bitString = dec2bin(num);
-  bitArray = bitString.split("");
-  bitArray.reverse();
-  //#endregion
+//     1997 was not a leap year as it's not divisible by 4.
+//     1900 was not a leap year as it's not divisible by 400.
+//     2000 was a leap year!
 
-  for (let x = 0; x < bitArray.length; x++) {
-
-    if (x === 4) {
-      codeArray = codeArray.reverse();
-      return codeArray;
-    }
-
-    if (bitArray[x] === "1") {
-      codeArray.push(responses[x]);
-    }
+const isLeap = (year) => {
+  if (year % 100 === 0) {
+    return year % 400 === 0;
   }
-
-  return codeArray;
+  return year % 4 === 0;
 };
 
-// Secret Handshake
-// Create A Handshake For A Number
+//  "A leap year"
+// "year not divisible by 4 in common year"
+const res0 = isLeap(2015); //  .toBe(false);
 
-// // wink for 1
-// const res0 = commands(1); //  .toEqual(['wink']);
+// "year divisible by 2, not divisible by 4 in common year"
+const res1 = isLeap(1970); //  .toBe(false);
 
-// // double blink for 10
-// const res1 = commands(2); //  .toEqual(['double blink']);
+// "year divisible by 4, not divisible by 100 in leap year"
+const res2 = isLeap(1996); //  .toBe(true);
 
-// // close your eyes for 100
-// const res2 = commands(4); //  .toEqual(['close your eyes']);
+// "year divisible by 4 and 5 is still a leap year"
+const res3 = isLeap(1960); //  .toBe(true);
 
-// // jump for 1000
-// const res3 = commands(8); //  .toEqual(['jump']);
+// "year divisible by 100, not divisible by 400 in common year"
+const res4 = isLeap(2100); //  .toBe(false);
 
-// // // --------------------------------------------------
+//  "year divisible by 100 but not by 3 is still not a leap year"
+const res5 = isLeap(1900); //  .toBe(false);
 
-// // combine two actions
-// const res4 = commands(3); //  .toEqual(['wink', 'double blink']);
+//  "year divisible by 400 in leap year"
+const res6 = isLeap(2000); //  .toBe(true);
 
-// // reverse two actions
-// const res5 = commands(19); //  .toEqual(['double blink', 'wink']);
+//  "year divisible by 400 but not by 125 is still a leap year"
+const res7 = isLeap(2400); //  .toBe(true);
 
-// // reversing one action gives the same action
-// const res6 = commands(24); //  .toEqual(['jump']);
+//  "year divisible by 200, not divisible by 400 in common year"
+const res8 = isLeap(1800); //  .toBe(false);
 
-// // reversing no actions still gives no actions
-// const res7 = commands(16); //  .toEqual([]);
+console.log(res0);
+console.log(res1);
+console.log(res2);
+console.log(res3);
+console.log(res4);
+console.log(res5);
+console.log(res6);
+console.log(res7);
+console.log(res8);
 
-// // all possible actions
-// const res8 = commands(15); /* .toEqual(["wink", "double blink", "close your eyes", "jump"]); */
-
-// // reverse all possible actions
-// const res9 = commands(31) /* .toEqual([ "jump", "close your eyes", "double blink", "wink"]); */
-
-// do nothing for zero
-const res10 = commands(0)  //  .toEqual([]);
-
-// console.log(res0);
-// console.log(res1);
-// console.log(res2);
-// console.log(res3);
-// // --------------------------------------
-// console.log(res4);
-// console.log(res5);
-// console.log(res6);
-// console.log(res7);
-// console.log(res8);
-// console.log(res9);
-console.log(res10);
