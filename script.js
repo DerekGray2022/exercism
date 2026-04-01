@@ -1,28 +1,103 @@
 // go
 
+//#region Get operators/operands
+function getOps(req, reg) {
+  let tempArr = [];
+  let temp = req.match(reg);
+  if (temp) {
+    for (let x = 0; x < temp.length; x++) {
+      tempArr.push([]);
+      reg.test(req);
+      tempArr[x].push(temp[x]);
+      tempArr[x].push(reg.lastIndex - temp[x].length);
+    }
+    return tempArr;
+  }
+  return null;
+}
+//#endregion
+
+//#region Switch operator strings for symbols
+function switchOps(operators) {
+  let op = "";
+  for (let x = 0; x < operators.length; x++) {
+    operators[x][0] = operators[x][0].toLowerCase();
+    switch (operators[x][0]) {
+      case "plus":
+        op = "+";
+        break;
+      case "minus":
+        op = "-";
+        break;
+      case "multiplied":
+        op = "*";
+        break;
+      case "divided":
+        op = "/";
+        break;
+      default:
+        break;
+    }
+    operators[x][0] = op;
+  }
+}
+//#endregion
+
+//#region Sort operators/operands by index
+function compareIndices(a, b) {
+  return a[1] - b[1];
+}
+//#endregion
+
 const answer = (req) => {
   //#region Collect useable data from req
+  let eqTotal = 0;
   const regNumber = /-?\d+/g;
   const regOperator = /plus|minus|multiplied|divided/gi;
+  const numbers = getOps(req, regNumber);
+  let operators = getOps(req, regOperator);
+  operators && switchOps(operators);
+  let allOps = [...numbers, ...operators];
+  allOps.sort(compareIndices);
+  let eqString = ``;
 
-  let resNumber = req.match(regNumber);
-  let resOperator = req.match(regOperator);
-
-  let data = {
-    number: resNumber,
-    operator: resOperator,
-  };
+  for (let x = 0; x < allOps.length; x++) {
+    eqString += `${allOps[x][0]} `;
+    if (x > 0 && x % 2 === 0) {
+      eqString = eqString.trim();
+      eqTotal = eval(eqString);
+      eqString = `${String(eqTotal)} `;
+    }
+  }
   //#endregion
 
-  const numbers = data.number;
-  const operators = data.operator;
+  let sortArr = [];
+
+  //#region Throw Error on invalid req
+  if (numbers === null) {
+    throw new Error("Your request was invalid.");
+  }
+  //#endregion
+
+  if (operators) {
+    //#region Throw Error on missing operand
+    if (numbers.length === operators.length) {
+      throw new Error("Your request is missing an operand.");
+    }
+    //#endregion
+
+    //#region Throw Error on missing operator
+    if (numbers.length - operators.length > 1) {
+      throw new Error("Your request is missing an operator.");
+    }
+    //#endregion
+  }
 
   //#region Return just a number
-  if (operators === null) return numbers;
+  if (operators === null) return numbers[0][0];
   //#endregion
-  
 
-  // return data;
+  return eqTotal;
 };
 
 // // just a number
@@ -34,8 +109,8 @@ const answer = (req) => {
 // // just a negative number
 // const res3 = answer("What is -123?"); //  .toEqual(-123);
 
-// addition
-const res4 = answer("What is 1 plus 1 minus 2?"); //  .toEqual(2);
+// // addition
+// const res4 = answer("What is 1 plus 1 minus 2?"); //  .toEqual(0);
 
 // // addition with a left hand zero
 // const res5 = answer("What is 0 plus 2?"); //  .toEqual(2);
@@ -76,11 +151,11 @@ const res4 = answer("What is 1 plus 1 minus 2?"); //  .toEqual(2);
 // // multiple multiplication
 // const res17 = answer("What is 2 multiplied by -2 multiplied by 3?"); //  .toEqual(-12);
 
-// // addition and multiplication
-// const res18 = answer("What is -3 plus 7 multiplied by -2?"); //  .toEqual(-8);
+// addition and multiplication
+const res18 = answer("What is -3 plus 7 multiplied by -2?"); //  .toEqual(-8);
 
-// // multiple division
-// const res19 = answer("What is -12 divided by 2 divided by -3?"); //  .toEqual(2);
+// multiple division
+const res19 = answer("What is -12 divided by 2 divided by -3?"); //  .toEqual(2);
 
 // // unknown operation
 // const res20 = () =>
@@ -115,7 +190,7 @@ const res4 = answer("What is 1 plus 1 minus 2?"); //  .toEqual(2);
 // console.log(res1);
 // console.log(res2);
 // console.log(res3);
-console.log(res4);
+// console.log(res4);
 // console.log(res5);
 // console.log(res6);
 // console.log(res7);
@@ -129,9 +204,9 @@ console.log(res4);
 // console.log(res15);
 // console.log(res16);
 // console.log(res17);
-// console.log(res18);
-// console.log(res19);
-// console.log(res20());
+console.log(res18);
+console.log(res19);
+// console.log(res20());  //  NOT DONE
 // console.log(res21());
 // console.log(res22());
 // console.log(res23());
