@@ -1,154 +1,158 @@
 // go
 
-// a + b ≥ c
-// b + c ≥ a
-// c + a ≥ b
+// Rules
 
-class Triangle {
-  constructor(...sides) {
-    const [a, b, c] = [...sides];
-    this.a = a;
-    this.b = b;
-    this.c = c;
-    this.one = this.a + this.b >= this.c;
-    this.two = this.b + this.c >= this.a;
-    this.three = this.c + this.a >= this.b;
-    this.zero = this.a === 0 || this.b === 0 || this.c === 0;
-    this.output = false;
+//     The deck is split between two players. The player's cards are read from left to right, where the leftmost card is the top of the deck.
+//     A round consists of both players playing at least one card.
+//     Players take turns placing the top card of their deck onto a central pile.
+//     If the card is a number card (2-10), play simply passes to the other player.
+//     If the card is a payment card, a penalty must be paid:
+//         J → opponent must pay 1 card
+//         Q → opponent must pay 2 cards
+//         K → opponent must pay 3 cards
+//         A → opponent must pay 4 cards
+//     If the player paying a penalty reveals another payment card, that player stops paying the penalty. The other player must then pay a penalty based on the new payment card.
+//     If the penalty is fully paid without interruption, the player who placed the last payment card collects the central pile and places it at the bottom of their deck. That player then starts the next round.
+//     If a player runs out of cards and is unable to play a card (either while paying a penalty or when it is their turn), the other player collects the central pile.
+//     The moment when a player collects cards from the central pile is called a trick.
+//     If a player has all the cards in their possession after a trick, the game ends.
+//     The game enters a loop as soon as the decks are identical to what they were earlier during the game, not counting number cards!
 
-    this.isTriangle = () => {
-      if (!this.one || !this.two || !this.three || this.zero) {
-        this.output = false;
-      }
-      return this.output;
+const simulateGame = (playerA, playerB) => {
+  const regex = /^[J | Q | K | A]$/;
+  const payCards = { J: 1, Q: 2, K: 3, A: 4 };
+  let output = {};
+  let centralPile = [];
+  let switchPlayer = true;
+  let tricks = 0;
+  let cards = 0;
+
+  //#region Switch Player
+  const handleSwitch = (player) => {
+    switchPlayer = !switchPlayer;
+    player = switchPlayer ? playerA : playerB;
+    return player;
+  };
+  //#endregion
+
+  //#region Deal Card
+  const dealCard = (player) => {
+    // Deal card
+    let card = player.shift();
+    cards++;
+    // Add card to central pile
+    centralPile.push(card);
+    // Check for face card
+    if (regex.test(card)) {
+      // Enter Penalty Card Loop
+    } else {
+      // return centralPile;
+    }
+
+    // Check if player is out of cards
+    if (player.length === 0) {
+      endGame(player);
+      return output;
+    } else {
+      player = handleSwitch(player);
+      dealCard(player);
+    }
+    return output;
+  };
+  //#endregion
+
+  //#region End Game
+  const endGame = (player) => {
+    cards++;
+    player = handleSwitch(player);
+    player.push(...centralPile);
+    tricks++;
+    output = {
+      status: "finished",
+      cards: cards,
+      tricks: tricks,
     };
-  }
+    return output;
+  };
+  //#endregion
 
-  get isEquilateral() {
-    if (this.a === this.b && this.b === this.c) {
-      this.output = true;
-    } 
-    this.isTriangle();
-    return this.output;
-  }
+  //#region Penalty Loop
+  const penaltyLoop = (player) => {
+    // Build Penalty Loop
+  };
+  //#endregion
 
-  get isIsosceles() {
-    if (this.a === this.b || this.b === this.c || this.c === this.a) {
-      this.output = true;
-    }
-    this.isTriangle();
-    return this.output;
-  }
+  dealCard(playerA);
 
-  get isScalene() {
-    if (this.a !== this.b && this.b !== this.c && this.c !== this.a) {
-      this.output = true;
-    }
-    this.isTriangle();
-    return this.output;
-  }
-}
+  return output;
+};
 
-// equilateral triangle
+// two cards, one trick
+let playerA = ["2"];
+let playerB = ["3"];
+const res0 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 2, tricks: 1 };
 
-// all sides are equal
-const triangle0 = new Triangle(2, 2, 2);
-const res0 = triangle0.isEquilateral; //  .toBe(true);
+// three cards, one trick
+playerA = ["2", "4"];
+playerB = ["3"];
+const res1 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 3, tricks: 1 };
 
-// any side is unequal
-const triangle1 = new Triangle(2, 3, 2);
-const res1 = triangle1.isEquilateral; //  .toBe(false);
+// four cards, one trick
+playerA = ["2", "4"];
+playerB = ["3", "5", "6"];
+const res2 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 4, tricks: 1 };
 
-// no sides are equal
-const triangle2 = new Triangle(5, 4, 6);
-const res2 = triangle2.isEquilateral; //  .toBe(false);
+// the ace reigns supreme
+playerA = ["2", "A"];
+playerB = ["3", "4", "5", "6", "7"];
+const res3 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 7, tricks: 1 };
 
-// all zero sides is not a triangle
-const triangle3 = new Triangle(0, 0, 0);
-const res3 = triangle3.isEquilateral; //  .toBe(false);
+// // the king beats ace
+// playerA = ["2", "A"];
+// playerB = ["3", "4", "5", "6", "K"];
+// const res4 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 7, tricks: 1 };
 
-// sides may be floats
-const triangle4 = new Triangle(0.5, 0.5, 0.5);
-const res4 = triangle4.isEquilateral; //  .toBe(true);
+// // the queen seduces the king
+// playerA = ["2", "A", "7", "8", "Q"];
+// playerB = ["3", "4", "5", "6", "K"];
+// const res5 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 10, tricks: 1 };
 
-// --------------------------------------------------
+// // the jack betrays the queen
+// playerA = ["2", "A", "7", "8", "Q"];
+// playerB = ["3", "4", "5", "6", "K", "9", "J"];
+// const res6 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 12, tricks: 1 };
 
-// isosceles triangle
+// // the 10 just wants to put on a show
+// playerA = ["2", "A", "7", "8", "Q", "10"];
+// playerB = ["3", "4", "5", "6", "K", "9", "J"];
+// const res7 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 13, tricks: 1 };
 
-// // last two sides are equal
-// const triangle5 = new Triangle(3, 4, 4);
-// const res5 = triangle5.isIsosceles; //  .toBe(true);
+// // simple loop with decks of 3 cards
+// playerA = ["J", "2", "3"];
+// playerB = ["4", "J", "5"];
+// const res8 = simulateGame(playerA, playerB); //  .toEqual{ status: "loop", cards: 8, tricks: 3 };
 
-// // first two sides are equal
-// const triangle6 = new Triangle(4, 4, 3);
-// const res6 = triangle6.isIsosceles; //  .toBe(true);
+// // two tricks
+// playerA = ["J"];
+// playerB = ["3", "J"];
+// const res9 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 5, tricks: 2 };
 
-// // first and last sides are equal
-// const triangle7 = new Triangle(4, 3, 4);
-// const res7 = triangle7.isIsosceles; //  .toBe(true);
+// // more tricks
+// playerA = ["J", "2", "4"];
+// playerB = ["3", "J", "A"];
+// const res10 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 12, tricks: 4
+// // };
 
-// // equilateral triangles are also isosceles
-// const triangle8 = new Triangle(4, 4, 4);
-// const res8 = triangle8.isIsosceles; //  .toBe(true);
-
-// // no sides are equal
-// const triangle9 = new Triangle(2, 3, 4);
-// const res9 = triangle9.isIsosceles; //  .toBe(false);
-
-// // first triangle inequality violation
-// const triangle10 = new Triangle(1, 1, 3);
-// const res10 = triangle10.isIsosceles; //  .toBe(false);
-
-// // second triangle inequality violation
-// const triangle11 = new Triangle(1, 3, 1);
-// const res11 = triangle11.isIsosceles; //  .toBe(false);
-
-// // third triangle inequality violation
-// const triangle12 = new Triangle(3, 1, 1);
-// const res12 = triangle12.isIsosceles; //  .toBe(false);
-
-// // sides may be floats
-// const triangle13 = new Triangle(0.5, 0.4, 0.5);
-// const res13 = triangle13.isIsosceles; //  .toBe(true);
-
-// -----------------------------------------
-
-// scalene triangle
-
-// // no sides are equal
-// const triangle14 = new Triangle(5, 4, 6);
-// const res14 = triangle14.isScalene; //  .toBe(true);
-
-// // all sides are equal
-// const triangle15 = new Triangle(4, 4, 4);
-// const res15 = triangle15.isScalene; //  .toBe(false);
-
-// // first and second sides are equal
-// const triangle16 = new Triangle(4, 4, 3);
-// const res16 = triangle16.isScalene; //  .toBe(false);
-
-// // first and third sides are equal
-// const triangle17 = new Triangle(3, 4, 3);
-// const res17 = triangle17.isScalene; //  .toBe(false);
-
-// // second and third sides are equal
-// const triangle18 = new Triangle(4, 3, 3);
-// const res18 = triangle18.isScalene; //  .toBe(false);
-
-// // may not violate triangle inequality
-// const triangle19 = new Triangle(7, 3, 2);
-// const res19 = triangle19.isScalene; //  .toBe(false);
-
-// // sides may be floats
-// const triangle20 = new Triangle(0.5, 0.4, 0.6);
-// const res20 = triangle20.isScalene; //  .toBe(true);
+// // simple loop with decks of 4 cards
+// playerA = ["2", "3", "J", "6"];
+// playerB = ["K", "5", "J", "7"];
+// const res11 = simulateGame(playerA, playerB); //  .toEqual{ status: "loop", cards: 16, tricks: 4 };
 
 console.log(res0);
 console.log(res1);
 console.log(res2);
 console.log(res3);
-console.log(res4);
-// ----------------------------------------------
+// console.log(res4);
 // console.log(res5);
 // console.log(res6);
 // console.log(res7);
@@ -156,13 +160,3 @@ console.log(res4);
 // console.log(res9);
 // console.log(res10);
 // console.log(res11);
-// console.log(res12);
-// console.log(res13);
-// // ----------------------------------------------
-// console.log(res14);
-// console.log(res15);
-// console.log(res16);
-// console.log(res17);
-// console.log(res18);
-// console.log(res19);
-// console.log(res20);
