@@ -1,28 +1,45 @@
 // go
 
-//#region Deal Card
-const dealCard = (player) => {
-  let centralPile = [];
-  let card = player.shift();
-  const payCards = { J: 1, Q: 2, K: 3, A: 4 };
-
-  // Deal Card
-  centralPile.push(card);
-
-  // Check for face card
-  if (card === "J" || "Q" || "K" || "A") {
-    // Enter Penalty Card Loop
-    console.log(payCards[card]);
+class Clock {
+  constructor(hrs, mins) {
+    this.hrs = hrs ? hrs : 0;
+    this.mins = mins ? mins : 0;
+    this.minPlus = 0;
   }
 
-  // Check if player has cards left
-  if (player.length === 0) {
-    // Deal with END OF GAME
-    // return
+  get Mins(){
+    //#region Deal with Minutes
+    this.mins = this.mins % 60;
+    this.minPlus = parseInt(this.mins / 60);
+    if (this.mins < 60 && this.mins > -60 && this.mins !== 0) {
+      this.minPlus -= 1;
+    }
+    if (this.mins < 0) {
+      this.mins = 60 + this.mins;
+    }
+    //#endregion
   }
 
-  return;
-};
-//#endregion
+  get Hours() {
+    //#region Deal with hours
+    this.hrs = this.hrs + this.minPlus;
+    this.hrs = this.hrs % 24;
+    if (this.hrs < 0) {
+      this.hrs = 24 + this.hrs;
+    }
+    if (this.hrs > 24) {
+      this.hrs = this.hrs % 24;
+    }
+    //#endregion
+  }
 
-dealCard(["K"]);
+  toString() {
+    let mm = this.Mins;
+    let hh = this.Hours;
+  }
+}
+
+// on the hour
+const res0 = new Clock(8).toString(); //  .toEqual('08:00');
+
+console.log(res0);

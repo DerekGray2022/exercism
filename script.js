@@ -1,193 +1,289 @@
 // go
 
-// Rules
+class Clock {
+  constructor(hrs, mins) {
+    this.hrs = hrs ? hrs : 0;
+    this.mins = mins ? mins : 0;
+  }
 
-//     The deck is split between two players. The player's cards are read from left to right, where the leftmost card is the top of the deck.
-//     A round consists of both players playing at least one card.
-//     Players take turns placing the top card of their deck onto a central pile.
-//     If the card is a number card (2-10), play simply passes to the other player.
-//     If the card is a payment card, a penalty must be paid:
-//         J → opponent must pay 1 card
-//         Q → opponent must pay 2 cards
-//         K → opponent must pay 3 cards
-//         A → opponent must pay 4 cards
-//     If the player paying a penalty reveals another payment card, that player stops paying the penalty. The other player must then pay a penalty based on the new payment card.
-//     If the penalty is fully paid without interruption, the player who placed the last payment card collects the central pile and places it at the bottom of their deck. That player then starts the next round.
-//     If a player runs out of cards and is unable to play a card (either while paying a penalty or when it is their turn), the other player collects the central pile.
-//     The moment when a player collects cards from the central pile is called a trick.
-//     If a player has all the cards in their possession after a trick, the game ends.
-//     The game enters a loop as soon as the decks are identical to what they were earlier during the game, not counting number cards!
+  toString() {
+    //#region Deal with Minutes
+    let mins = this.mins % 60;
+    let minPlus = parseInt(this.mins / 60);
 
-const simulateGame = (playerA, playerB) => {
-  const regex = /^[J | Q | K | A]$/;
-  const payCards = { J: 1, Q: 2, K: 3, A: 4 };
-  let output = { status: "loop", cards: 0, tricks: 0 };
-  let centralPile = [];
-  let switchPlayer = true;
-  let loopBreak = false;
-  let tricks = 0;
-  let cards = 0;
-
-  //#region Switch Player
-  const handleSwitch = (player) => {
-    switchPlayer = !switchPlayer;
-    player = switchPlayer ? playerA : playerB;
-    return player;
-  };
-  //#endregion
-
-  //#region Deal Card
-  const dealCard = (player, module) => {
-    // Check if player is out of cards
-    if (player.length === 0) {
-      tricks++;
-      endGame(player);
-      return;
+    if (mins >= -60 && mins < 0) {
+      minPlus -= 1;
     }
-
-    // Prepare card
-    let card = player.shift();
-    // Add card to central pile
-    centralPile.push(card);
-    cards++;
-    // Check for face card
-    if (regex.test(card)) {
-      penaltyLoop(player, card);
-    } 
-    else {
-      // Deal a card
-      if (module === "main") {
-        player = handleSwitch(player);
-        dealCard(player, "main");
-      } 
-      else {
-        return player;
-      }
+    if (mins < 0) {
+      mins = 60 + mins;
     }
-  };
-  //#endregion
+    //#endregion
 
-  //#region Penalty Loop
-  const penaltyLoop = (player, card) => {
-    player = handleSwitch(player);
-    let loop = payCards[card];
+    //#region Deal with hours
+    let hrs = this.hrs + minPlus;
+    hrs = hrs % 24;
 
-    for (let x = 0; x < loop; x++) {
-      if (loopBreak) break;
-      dealCard(player, "loop");
+    if (hrs < 0) {
+      hrs = 24 + hrs;
     }
-
-    if (!loopBreak) {
-      // player = handleSwitch(player);
-      centralPile.reverse();
-      player.push(...centralPile);
-      centralPile = [];
-      tricks++;
-      // player = handleSwitch(player);
-      if (player.length === 0) {
-        endGame(player);
-      } 
-      else {
-        dealCard(player, "main");
-      }
-    } 
-    else {
-      centralPile = [];
-      return;
+    if (hrs >= 24) {
+      hrs = hrs % 24;
     }
-  };
-  //#endregion
+    //#endregion
 
-  //#region End Game
-  const endGame = (player) => {
-    player = handleSwitch(player);
-    centralPile.reverse();
-    player.push(...centralPile);
-    output = {
-      status: "finished",
-      cards: cards,
-      tricks: tricks,
-    };
-    loopBreak = true;
-    return;
-  };
-  //#endregion
+    //#region Compile output
+    let output = ``;
+    hrs < 10 && (output += `0`);
+    output += `${hrs}:`;
 
-  dealCard(playerA, "main");
+    mins < 10 && (output += `0`);
+    output += `${mins}`;
+    //#endregion
 
-  return output;
-};
+    return output;
+  }
 
-// // two cards, one trick
-let playerA = ["2"];
-let playerB = ["3"];
-// const res0 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 2, tricks: 1 };
+  plus() {
+    return "plus";
+  }
 
-// // three cards, one trick
-// playerA = ["2", "4"];
-// playerB = ["3"];
-// const res1 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 3, tricks: 1 };
+  minus() {
+    return "minus";
+  }
 
-// // four cards, one trick
-// playerA = ["2", "4"];
-// playerB = ["3", "5", "6"];
-// const res2 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 4, tricks: 1 };
+  equals() {
+    return "equals";
+  }
+}
 
-// the ace reigns supreme
-playerA = ["2", "A"];
-playerB = ["3", "4", "5", "6", "7"];
-const res3 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 7, tricks: 1 };
+// Creating a new clock with an initial time
 
-// // the king beats ace
-// playerA = ["2", "A"];
-// playerB = ["3", "4", "5", "6", "K"];
-// const res4 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 7, tricks: 1 };
+// // on the hour
+// const res0 = new Clock(8).toString(); //  .toEqual('08:00');
 
-// // the queen seduces the king
-// playerA = ["2", "A", "7", "8", "Q"];
-// playerB = ["3", "4", "5", "6", "K"];
-// const res5 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 10, tricks: 1 };
+// // past the hour
+// const res1 = new Clock(11, 9).toString(); //  .toEqual('11:09');
 
-// // the jack betrays the queen
-// playerA = ["2", "A", "7", "8", "Q"];
-// playerB = ["3", "4", "5", "6", "K", "9", "J"];
-// const res6 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 12, tricks: 1 };
+// // midnight is zero hours
+// const res2 = new Clock(24, 0).toString(); //  .toEqual('00:00');
 
-// the 10 just wants to put on a show
-playerA = ["2", "A", "7", "8", "Q", "10"];
-playerB = ["3", "4", "5", "6", "K", "9", "J"];
-const res7 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 13, tricks: 1 };
+// // hour rolls over
+// const res3 = new Clock(25, 0).toString(); //  .toEqual('01:00');
 
-// simple loop with decks of 3 cards
-playerA = ["J", "2", "3"];
-playerB = ["4", "J", "5"];
-const res8 = simulateGame(playerA, playerB); //  .toEqual{ status: "loop", cards: 8, tricks: 3 };
+// // hour rolls over continuously
+// const res4 = new Clock(100, 0).toString(); //  .toEqual('04:00');
 
-// // two tricks
-// playerA = ["J"];
-// playerB = ["3", "J"];
-// const res9 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 5, tricks: 2 };
+// sixty minutes is next hour
+const res5 = new Clock(1, 60).toString(); //  .toEqual('02:00');
 
-// // more tricks
-// playerA = ["J", "2", "4"];
-// playerB = ["3", "J", "A"];
-// const res10 = simulateGame(playerA, playerB); //  .toEqual{ status: "finished", cards: 12, tricks: 4
-// // };
+// minutes roll over
+const res6 = new Clock(0, 160).toString(); //  .toEqual('02:40');
 
-// // simple loop with decks of 4 cards
-// playerA = ["2", "3", "J", "6"];
-// playerB = ["K", "5", "J", "7"];
-// const res11 = simulateGame(playerA, playerB); //  .toEqual{ status: "loop", cards: 16, tricks: 4 };
+// minutes roll over continuously
+const res7 = new Clock(0, 1723).toString(); //  .toEqual('04:43');
+
+//hour and minutes roll over
+const res8 = new Clock(1, 160).toString(); //  .toEqual('03:40');
+
+// hour and minutes roll over continuously
+const res9 = new Clock(201, 3001).toString(); // .toEqual('11:01');
+
+// hour and minutes roll over to exactly midnight
+const res10 = new Clock(72, 8640).toString(); //  .toEqual('00:00');
+
+// negative hour
+const res11 = new Clock(-1, 15).toString(); //  .toEqual('23:15');
+
+// negative hour rolls over
+const res12 = new Clock(-25, 0).toString(); //  .toEqual('23:00');
+
+// negative hour rolls over continuously
+const res13 = new Clock(-91, 0).toString(); //  .toEqual('05:00');
+
+// negative minutes
+const res14 = new Clock(1, -40).toString(); //  .toEqual('00:20');
+
+// negative minutes rolls over
+const res15 = new Clock(1, -160).toString(); //  .toEqual('22:20');
+
+// negative minutes rolls over continuously
+const res16 = new Clock(1, -4820).toString(); //  .toEqual('16:40');
+
+//  negative sixty minutes is previous hour
+const res20 = new Clock(2, -60).toString(); //  .toEqual("01:00");
+
+//  negative hour and minutes both roll over
+const res21 = new Clock(-25, -160).toString(); //  .toEqual("20:20");
+
+//  negative hour and minutes both roll over continuously
+const res22 = new Clock(-121, -5810).toString(); //  .toEqual("22:10");
+
+// -----------------------------------------------------------------------
+
+// //  Adding minutes
+
+//   //  add minutes
+//     const res23 = new Clock(10, 0).plus(3).toString() //  .toEqual("10:03");
+
+//   //  add no minutes
+//     const res24 = new Clock(6, 41).plus(0).toString() //  .toEqual("06:41");
+
+//   //  add to next hour
+//     const res25 = new Clock(0, 45).plus(40).toString()  //  .toEqual("01:25");
+
+//   //  add more than one hour
+//     const res26 = new Clock(10, 0).plus(61).toString()  //  .toEqual("11:01");
+
+//   //  add more than two hours with carry
+//     const res27 = new Clock(0, 45).plus(160).toString() //  .toEqual("03:25");
+
+//   //  add across midnight
+//     const res28 = new Clock(23, 59).plus(2).toString()  //  .toEqual("00:01");
+
+//   //  add more than one day (1500 min = 25 hrs)
+//     const res29 = new Clock(5, 32).plus(1500).toString()  //  .toEqual("06:32");
+
+//   //  add more than two days
+//     const res30 = new Clock(1, 1).plus(3500).toString()  //  .toEqual("11:21");
+
+// -----------------------------------------------------------------------
+
+// //  Subtract minutes
+
+//   //  subtract minutes
+//     const res31 = new Clock(10, 3).minus(3).toString()  //  .toEqual("10:00");
+
+//   //  subtract to previous hour
+//     const res32 = new Clock(10, 3).minus(30).toString() //  .toEqual("09:33");
+
+//   //  subtract more than an hour
+//     const res33 = new Clock(10, 3).minus(70).toString() //  .toEqual("08:53");
+
+//   //  subtract across midnight
+//     const res34 = new Clock(0, 3).minus(4).toString() //  .toEqual("23:59");
+
+//   //  subtract more than two hours
+//     const res35 = new Clock(0, 0).minus(160).toString() //  .toEqual("21:20");
+
+//   //  subtract more than two hours with borrow
+//     const res36 = new Clock(6, 15).minus(160).toString()  //  .toEqual("03:35");
+
+//   //  subtract more than one day (1500 min = 25 hrs)
+//     const res37 = new Clock(5, 32).minus(1500).toString() //  .toEqual("04:32");
+
+//   //  subtract more than two days
+//     const res38 = new Clock(2, 20).minus(3000).toString() //  .toEqual("00:20");
+
+// -----------------------------------------------------------------------
+
+// //  Compare two clocks for equality
+
+//   //  clocks with same time
+//     const res39 = new Clock(15, 37).equals(new Clock(15, 37)) //  .toBe(true);
+
+//   //  clocks a minute apart
+//     const res40 = new Clock(15, 36).equals(new Clock(15, 37)) //  .toBe(false);
+
+//   //  clocks an hour apart
+//     const res41 = new Clock(14, 37).equals(new Clock(15, 37)) //  .toBe(false);
+
+//   // clocks with hour overflow
+//     const res42 = new Clock(10, 37).equals(new Clock(34, 37)) //  .toBe(true);
+
+//   //  clocks with hour overflow by several days
+//     const res43 = new Clock(3, 11).equals(new Clock(99, 11))  //  .toBe(true);
+
+//   //  clocks with negative hour
+//     const res44 = new Clock(22, 40).equals(new Clock(-2, 40)) //  .toBe(true);
+
+//   //  clocks with negative hour that wraps
+//     const res45 = new Clock(17, 3).equals(new Clock(-31, 3))  //  .toBe(true);
+
+//   //  clocks with negative hour that wraps multiple times
+//     const res46 = new Clock(13, 49).equals(new Clock(-83, 49))  //  .toBe(true);
+
+//   //  clocks with minute overflow
+//     const res47 = new Clock(0, 1).equals(new Clock(0, 1441))  //  .toBe(true);
+
+//   //  clocks with minute overflow by several days
+//     const res48 = new Clock(2, 2).equals(new Clock(2, 4322))  //  .toBe(true);
+
+//   //  clocks with negative minute
+//     const res49 = new Clock(2, 40).equals(new Clock(3, -20))  //  .toBe(true);
+
+//   //  clocks with negative minute that wraps
+//     const res50 = new Clock(4, 10).equals(new Clock(5, -1490))  //  .toBe(true);
+
+//   //  clocks with negative minute that wraps multiple times
+//     const res51 = new Clock(6, 15).equals(new Clock(6, -4305))  //  .toBe(true);
+
+//   //  clocks with negative hours and minutes
+//     const res52 = new Clock(7, 32).equals(new Clock(-12, -268)) //  .toBe(true);
+
+//   //  clocks with negative hours and minutes that wrap
+//     const res53 = new Clock(18, 7).equals(new Clock(-54, -11513)) //  .toBe(true);
+
+//   //  full clock and zeroed clock
+//     const res54 = new Clock(24, 0).equals(new Clock(0, 0))  //  .toBe(true);
 
 // console.log(res0);
 // console.log(res1);
 // console.log(res2);
-console.log(res3);
+// console.log(res3);
 // console.log(res4);
-// console.log(res5);
-// console.log(res6);
+console.log(res5);
+console.log(res6);
 console.log(res7);
 console.log(res8);
-// console.log(res9);
-// console.log(res10);
-// console.log(res11);
+console.log(res9);
+console.log(res10);
+console.log(res11);
+console.log(res12);
+console.log(res13);
+console.log(res14);
+console.log(res15);
+console.log(res16);
+console.log(res20);
+console.log(res21);
+console.log(res22);
+
+// -----------------------------------------------------------------------
+
+// console.log(res23);
+// console.log(res24);
+// console.log(res25);
+// console.log(res26);
+// console.log(res27);
+// console.log(res28);
+// console.log(res29);
+// console.log(res30);
+
+// -----------------------------------------------------------------------
+
+// console.log(res31);
+// console.log(res32);
+// console.log(res33);
+// console.log(res34);
+// console.log(res35);
+// console.log(res36);
+// console.log(res37);
+// console.log(res38);
+
+// -----------------------------------------------------------------------
+
+// console.log(res39);
+// console.log(res40);
+// console.log(res41);
+// console.log(res42);
+// console.log(res43);
+// console.log(res44);
+// console.log(res45);
+// console.log(res46);
+// console.log(res47);
+// console.log(res48);
+// console.log(res49);
+// console.log(res50);
+// console.log(res51);
+// console.log(res52);
+// console.log(res53);
+// console.log(res54);
