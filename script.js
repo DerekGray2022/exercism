@@ -1,252 +1,358 @@
 // go
 
-class Clock {
-  constructor(hrs = 0, mins = 0) {
-    [this.hrs, this.mins] = this.calculateTime(hrs, mins);
-  }
+// year | month | date | hour | minutes | seconds | milliseconds
 
-  calculateTime(hrs, mins){
-     //#region Deal with Minutes
-    let minPlus = parseInt(mins / 60);
-    mins = mins % 60;
+const meetup = (year, month, ord, day) => {
+  // const output = new Date(year, month);
+  const loopEnd = new Date(year, month + 1, 0).getDate(); //  Number of days in this month
 
-    if (mins >= -60 && mins < 0) {
-      minPlus -= 1;
+  day = day.substring(0, 3);
+  month -= 1;
+  let res;
+
+  const daysArr = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const ordArr = {
+    teenth: 13,
+    first: 1,
+    second: 8,
+    third: 15,
+    fourth: 22,
+    last: loopEnd,
+  };
+  const loopStart = ordArr[ord];
+
+  if (ord === "last") {
+    for (let x = loopStart; x > 0; x--) {
+      let newDay = new Date(year, month, x);
+      res = daysArr[newDay.getDay()] === day;
+      if (res) {
+        res = new Date(year, month, x);
+        return res;
+      }
     }
-    if (mins < 0) {
-      mins = 60 + mins;
+  }
+
+  for (let x = loopStart; x < loopEnd; x++) {
+    let newDay = new Date(year, month, x);
+    res = daysArr[newDay.getDay()] === day;
+    if (res) {
+      res = new Date(year, month, x);
+      return res;
     }
-    //#endregion
-
-    //#region Deal with hours
-    hrs = hrs + minPlus;
-    hrs = hrs % 24;
-
-    if (hrs < 0) {
-      hrs = 24 + hrs;
-    }
-    if (hrs >= 24) {
-      hrs = hrs % 24;
-    }
-    //#endregion
-
-    return [hrs, mins]
   }
+};
 
-  toString() {
-    //#region Compile output
-    let output = ``;
-    
-    this.hrs < 10 && (output += `0`);
-    output += `${this.hrs}:`;
+// --------------------------------------------
 
-    this.mins < 10 && (output += `0`);
-    output += `${this.mins}`;
-    //#endregion
+// //   "Meetup"
 
-    return output;
-  }
+//   //  "monteenth of May 2013"
+//     const res0 = meetup(2013, 5, "teenth", "Monday")  //  .toEqual(new Date(2013, 4, 13));
 
-  plus(mins) {
-    this.mins += mins;
-    return this;
-  }
+// //  "monteenth of August 2013"
+//   const res1 = meetup(2013, 8, "teenth", "Monday")  //  .toEqual(new Date(2013, 7, 19));
 
-  minus(mins) {
-    this.mins -= mins;
-    return this;
-  }
+// //  monteenth of September 2013"
+//   const res2 = meetup(2013, 9, "teenth", "Monday")  //  .toEqual(new Date(2013, 8, 16));
 
-  equals(clock) {
-    let a = this.toString();
-    let b = clock.toString();
-    
-    return a === b;
-  }
-}
+// //  "tuesteenth of March 2013"
+//   const res3 = meetup(2013, 3, "teenth", "Tuesday") //  .toEqual(new Date(2013, 2, 19));
 
-// Creating a new clock with an initial time
+// //  "tuesteenth of April 2013"
+//   const res4 = meetup(2013, 4, "teenth", "Tuesday") //  .toEqual(new Date(2013, 3, 16));
 
-// // on the hour
-// const res0 = new Clock(8).toString(); //  .toEqual('08:00');
+// //  "tuesteenth of August 2013"
+//   const res5 = meetup(2013, 8, "teenth", "Tuesday") //  .toEqual(new Date(2013, 7, 13));
 
-// // past the hour
-// const res1 = new Clock(11, 9).toString(); //  .toEqual('11:09');
+// //  "wednesteenth of January 2013"
+//   const res6 = meetup(2013, 1, "teenth", "Wednesday") //.toEqual(new Date(2013, 0, 16),);
 
-// // midnight is zero hours
-// const res2 = new Clock(24, 0).toString(); //  .toEqual('00:00');
+// //  "wednesteenth of February 2013"
+//   const res7 = meetup(2013, 2, "teenth", "Wednesday") //  .toEqual(new Date(2013, 1, 13),);
 
-// // hour rolls over
-// const res3 = new Clock(25, 0).toString(); //  .toEqual('01:00');
+// //  "wednesteenth of June 2013"
+//   const res8 = meetup(2013, 6, "teenth", "Wednesday") //  .toEqual(new Date(2013, 5, 19),);
 
-// hour rolls over continuously
-const res4 = new Clock(100, 0).toString(); //  .toEqual('04:00');
+// //  "thursteenth of May 2013"
+//   const res9 = meetup(2013, 5, "teenth", "Thursday")  //  .toEqual(new Date(2013, 4, 16),);
 
-// sixty minutes is next hour
-const res5 = new Clock(1, 60).toString(); //  .toEqual('02:00');
+// //  "thursteenth of June 2013"
+//   const res10 = meetup(2013, 6, "teenth", "Thursday")  //  .toEqual(new Date(2013, 5, 13),);
 
-// minutes roll over
-const res6 = new Clock(0, 160).toString(); //  .toEqual('02:40');
+// //  "thursteenth of September 2013"
+//   const res11 = meetup(2013, 9, "teenth", "Thursday")  //  .toEqual(new Date(2013, 8, 19),);
 
-// minutes roll over continuously
-const res7 = new Clock(0, 1723).toString(); //  .toEqual('04:43');
+// //  "friteenth of April 2013"
+//   const res12 = meetup(2013, 4, "teenth", "Friday")  //  .toEqual(new Date(2013, 3, 19));
 
-//hour and minutes roll over
-const res8 = new Clock(1, 160).toString(); //  .toEqual('03:40');
+// //  "friteenth of August 2013"
+//   const res13 = meetup(2013, 8, "teenth", "Friday")  //  .toEqual(new Date(2013, 7, 16));
 
-// hour and minutes roll over continuously
-const res9 = new Clock(201, 3001).toString(); // .toEqual('11:01');
+// //  "friteenth of September 2013"
+//   const res14 = meetup(2013, 9, "teenth", "Friday")  //  .toEqual(new Date(2013, 8, 13));
 
-// // hour and minutes roll over to exactly midnight
-// const res10 = new Clock(72, 8640).toString(); //  .toEqual('00:00');
+// //  "saturteenth of February 2013"
+//   const res15 = meetup(2013, 2, "teenth", "Saturday")  //  .toEqual(new Date(2013, 1, 16),);
 
-// // negative hour
-// const res11 = new Clock(-1, 15).toString(); //  .toEqual('23:15');
+// //  "saturteenth of April 2013"
+//   const res16 = meetup(2013, 4, "teenth", "Saturday")  //  .toEqual(new Date(2013, 3, 13),);
 
-// // negative hour rolls over
-// const res12 = new Clock(-25, 0).toString(); //  .toEqual('23:00');
+// //  "saturteenth of October 2013"
+//   const res17 = meetup(2013, 10, "teenth", "Saturday") //  .toEqual(new Date(2013, 9, 19),);
 
-// // negative hour rolls over continuously
-// const res13 = new Clock(-91, 0).toString(); //  .toEqual('05:00');
+// //  "sunteenth of May 2013"
+//   const res18 = meetup(2013, 5, "teenth", "Sunday")  //  .toEqual(new Date(2013, 4, 19));
 
-// // negative minutes
-// const res14 = new Clock(1, -40).toString(); //  .toEqual('00:20');
+// //  "sunteenth of June 2013"
+//   const res19 = meetup(2013, 6, "teenth", "Sunday")  //  .toEqual(new Date(2013, 5, 16));
 
-// // negative minutes rolls over
-// const res15 = new Clock(1, -160).toString(); //  .toEqual('22:20');
+// //  "sunteenth of October 2013"
+//   const res20 = meetup(2013, 10, "teenth", "Sunday") // .toEqual(new Date(2013, 9, 13));
 
-// // negative minutes rolls over continuously
-// const res16 = new Clock(1, -4820).toString(); //  .toEqual('16:40');
+// ----------------------------------------
 
-// //  negative sixty minutes is previous hour
-// const res20 = new Clock(2, -60).toString(); //  .toEqual("01:00");
+// //  "first Monday of March 2013"
+// const res21 = meetup(2013, 3, "first", "Monday"); //  .toEqual(new Date(2013, 2, 4));
 
-// //  negative hour and minutes both roll over
-// const res21 = new Clock(-25, -160).toString(); //  .toEqual("20:20");
+// //  "first Monday of April 2013"
+// const res22 = meetup(2013, 4, "first", "Monday"); //  .toEqual(new Date(2013, 3, 1));
 
-// //  negative hour and minutes both roll over continuously
-// const res22 = new Clock(-121, -5810).toString(); //  .toEqual("22:10");
+// //  "first Tuesday of May 2013"
+// const res23 = meetup(2013, 5, "first", "Tuesday"); //  .toEqual(new Date(2013, 4, 7));
 
-// -----------------------------------------------------
+// //  "first Tuesday of June 2013"
+// const res24 = meetup(2013, 6, "first", "Tuesday"); //  .toEqual(new Date(2013, 5, 4));
 
-// //  Adding minutes
+// //  "first Wednesday of July 2013"
+// const res25 = meetup(2013, 7, "first", "Wednesday"); //  .toEqual(new Date(2013, 6, 3));
 
-  // //  add minutes
-  //   const res23 = new Clock(10, 0).plus(3).toString(); //  .toEqual("10:03");
+// //  "first Wednesday of August 2013"
+// const res26 = meetup(2013, 8, "first", "Wednesday"); //  .toEqual(new Date(2013, 7, 7));
 
-  // //  add no minutes
-  //   const res24 = new Clock(6, 41).plus(0).toString() //  .toEqual("06:41");
+// //  "first Thursday of September 2013"
+// const res27 = meetup(2013, 9, "first", "Thursday"); //  .toEqual(new Date(2013, 8, 5));
 
-  // //  add to next hour
-  //   const res25 = new Clock(0, 45).plus(40).toString()  //  .toEqual("01:25");
+// //  "first Thursday of October 2013"
+// const res28 = meetup(2013, 10, "first", "Thursday"); //  .toEqual(new Date(2013, 9, 3));
 
-  // //  add more than one hour
-  //   const res26 = new Clock(10, 0).plus(61).toString()  //  .toEqual("11:01");
+// //  "first Friday of November 2013"
+// const res29 = meetup(2013, 11, "first", "Friday"); //  .toEqual(new Date(2013, 10, 1));
 
-  // //  add more than two hours with carry
-  //   const res27 = new Clock(0, 45).plus(160).toString() //  .toEqual("03:25");
+// //  "first Friday of December 2013"
+// const res30 = meetup(2013, 12, "first", "Friday"); //  .toEqual(new Date(2013, 11, 6));
 
-  // //  add across midnight
-  //   const res28 = new Clock(23, 59).plus(2).toString()  //  .toEqual("00:01");
+// //  "first Saturday of January 2013"
+// const res31 = meetup(2013, 1, "first", "Saturday"); //  .toEqual(new Date(2013, 0, 5));
 
-  // //  add more than one day (1500 min = 25 hrs)
-  //   const res29 = new Clock(5, 32).plus(1500).toString()  //  .toEqual("06:32");
+// //  "first Saturday of February 2013"
+// const res32 = meetup(2013, 2, "first", "Saturday"); //  .toEqual(new Date(2013, 1, 2));
 
-  // //  add more than two days
-  //   const res30 = new Clock(1, 1).plus(3500).toString()  //  .toEqual("11:21");
+// //  "first Sunday of March 2013"
+// const res33 = meetup(2013, 3, "first", "Sunday"); //  .toEqual(new Date(2013, 2, 3));
 
-//  ----------------------------------------------------
+// //  "first Sunday of April 2013"
+// const res34 = meetup(2013, 4, "first", "Sunday"); //  .toEqual(new Date(2013, 3, 7));
 
-// //  Subtract minutes
+// ----------------------------------------
 
-  // //  subtract minutes
-  //   const res31 = new Clock(10, 3).minus(3).toString()  //  .toEqual("10:00");
+// //  "second Monday of March 2013"
+//   const res35 = meetup(2013, 3, "second", "Monday")  //  .toEqual(new Date(2013, 2, 11));
 
-  // //  subtract to previous hour
-  //   const res32 = new Clock(10, 3).minus(30).toString() //  .toEqual("09:33");
+// //  "second Monday of April 2013"
+//   const res36 = meetup(2013, 4, "second", "Monday")  //  .toEqual(new Date(2013, 3, 8));
 
-  // //  subtract more than an hour
-  //   const res33 = new Clock(10, 3).minus(70).toString() //  .toEqual("08:53");
+// //  "second Tuesday of May 2013"
+//   const res37 = meetup(2013, 5, "second", "Tuesday") //  .toEqual(new Date(2013, 4, 14));
 
-  // //  subtract across midnight
-  //   const res34 = new Clock(0, 3).minus(4).toString() //  .toEqual("23:59");
+// //  "second Tuesday of June 2013"
+//   const res38 = meetup(2013, 6, "second", "Tuesday") //  .toEqual(new Date(2013, 5, 11));
 
-  // //  subtract more than two hours
-  //   const res35 = new Clock(0, 0).minus(160).toString() //  .toEqual("21:20");
+// //  "second Wednesday of July 2013"
+//   const res39 = meetup(2013, 7, "second", "Wednesday") //  .toEqual(new Date(2013, 6, 10),);
 
-  // //  subtract more than two hours with borrow
-  //   const res36 = new Clock(6, 15).minus(160).toString()  //  .toEqual("03:35");
+// //  "second Wednesday of August 2013"
+//   const res40 = meetup(2013, 8, "second", "Wednesday") //  .toEqual(new Date(2013, 7, 14),)
 
-  // //  subtract more than one day (1500 min = 25 hrs)
-  //   const res37 = new Clock(5, 32).minus(1500).toString() //  .toEqual("04:32");
+// //  "second Thursday of September 2013"
+//   const res41 = meetup(2013, 9, "second", "Thursday")  //  .toEqual(new Date(2013, 8, 12),)
 
-  // //  subtract more than two days
-  //   const res38 = new Clock(2, 20).minus(3000).toString() //  .toEqual("00:20");
+// //  "second Thursday of October 2013"
+//   const res42 = meetup(2013, 10, "second", "Thursday") //  .toEqual(new Date(2013, 9, 10),)
 
-// -----------------------------------------------------
+// //  "second Friday of November 2013"
+//   const res43 = meetup(2013, 11, "second", "Friday") //  .toEqual(new Date(2013, 10, 8))
 
-// //  Compare two clocks for equality
+// //  "second Friday of December 2013"
+//   const res44 = meetup(2013, 12, "second", "Friday") //  .toEqual(new Date(2013, 11, 13),)
 
-  // //  clocks with same time
-  //   const res39 = new Clock(15, 37).equals(new Clock(15, 37)) //  .toBe(true);
+// //  "second Saturday of January 2013"
+//   const res45 = meetup(2013, 1, "second", "Saturday")  //  .toEqual(new Date(2013, 0, 12),)
 
-  // //  clocks a minute apart
-  //   const res40 = new Clock(15, 36).equals(new Clock(15, 37)) //  .toBe(false);
+// //  "second Saturday of February 2013"
+//   const res46 = meetup(2013, 2, "second", "Saturday")  //  .toEqual(new Date(2013, 1, 9))
 
-  // //  clocks an hour apart
-  //   const res41 = new Clock(14, 37).equals(new Clock(15, 37)) //  .toBe(false);
+// //  "second Sunday of March 2013"
+//   const res47 = meetup(2013, 3, "second", "Sunday")  //  .toEqual(new Date(2013, 2, 10))
 
-  // // clocks with hour overflow
-  //   const res42 = new Clock(10, 37).equals(new Clock(34, 37)) //  .toBe(true);
+// //  "second Sunday of April 2013"
+//   const res48 = meetup(2013, 4, "second", "Sunday")  //  .toEqual(new Date(2013, 3, 14))
 
-  // //  clocks with hour overflow by several days
-  //   const res43 = new Clock(3, 11).equals(new Clock(99, 11))  //  .toBe(true);
+// ----------------------------------------
 
-  // //  clocks with negative hour
-  //   const res44 = new Clock(22, 40).equals(new Clock(-2, 40)) //  .toBe(true);
+// //  "third Monday of March 2013"
+//   const res49 = meetup(2013, 3, "third", "Monday") //  .toEqual(new Date(2013, 2, 18))
 
-  // //  clocks with negative hour that wraps
-  //   const res45 = new Clock(17, 3).equals(new Clock(-31, 3))  //  .toBe(true);
+// //  "third Monday of April 2013"
+//   const res50 = meetup(2013, 4, "third", "Monday") //  .toEqual(new Date(2013, 3, 15));
 
-  // //  clocks with negative hour that wraps multiple times
-  //   const res46 = new Clock(13, 49).equals(new Clock(-83, 49))  //  .toBe(true);
+// //  "third Tuesday of May 2013"
+//   const res51 = meetup(2013, 5, "third", "Tuesday")  //.toEqual(new Date(2013, 4, 21));
 
-  // //  clocks with minute overflow
-  //   const res47 = new Clock(0, 1).equals(new Clock(0, 1441))  //  .toBe(true);
+// //  "third Tuesday of June 2013"
+//   const res52 = meetup(2013, 6, "third", "Tuesday")  //.toEqual(new Date(2013, 5, 18));
 
-  // //  clocks with minute overflow by several days
-  //   const res48 = new Clock(2, 2).equals(new Clock(2, 4322))  //  .toBe(true);
+// //  "third Wednesday of July 2013"
+//   const res53 = meetup(2013, 7, "third", "Wednesday")  //.toEqual(new Date(2013, 6, 17),);
 
-  // //  clocks with negative minute
-  //   const res49 = new Clock(2, 40).equals(new Clock(3, -20))  //  .toBe(true);
+// //  "third Wednesday of August 2013"
+//   const res54 = meetup(2013, 8, "third", "Wednesday")  //.toEqual(new Date(2013, 7, 21),);
 
-  // //  clocks with negative minute that wraps
-  //   const res50 = new Clock(4, 10).equals(new Clock(5, -1490))  //  .toBe(true);
+// //  "third Thursday of September 2013"
+//   const res55 = meetup(2013, 9, "third", "Thursday") //.toEqual(new Date(2013, 8, 19));
 
-  // //  clocks with negative minute that wraps multiple times
-  //   const res51 = new Clock(6, 15).equals(new Clock(6, -4305))  //  .toBe(true);
+// //  "third Thursday of October 2013"
+//   const res56 = meetup(2013, 10, "third", "Thursday")  //.toEqual(new Date(2013, 9, 17),);
 
-  // //  clocks with negative hours and minutes
-  //   const res52 = new Clock(7, 32).equals(new Clock(-12, -268)) //  .toBe(true);
+// //  "third Friday of November 2013"
+//   const res57 = meetup(2013, 11, "third", "Friday")  //.toEqual(new Date(2013, 10, 15));
 
-  // //  clocks with negative hours and minutes that wrap
-  //   const res53 = new Clock(18, 7).equals(new Clock(-54, -11513)) //  .toBe(true);
+// //  "third Friday of December 2013"
+//   const res58 = meetup(2013, 12, "third", "Friday")  //.toEqual(new Date(2013, 11, 20));
 
-  // //  full clock and zeroed clock
-  //   const res54 = new Clock(24, 0).equals(new Clock(0, 0))  //  .toBe(true);
+// //  "third Saturday of January 2013"
+//   const res59 = meetup(2013, 1, "third", "Saturday") //  .toEqual(new Date(2013, 0, 19));
 
-// -----------------------------------------------------
+// //  "third Saturday of February 2013"
+//   const res60 = meetup(2013, 2, "third", "Saturday") //  .toEqual(new Date(2013, 1, 16));
+
+// //  "third Sunday of March 2013"
+//   const res61 = meetup(2013, 3, "third", "Sunday") //  .toEqual(new Date(2013, 2, 17));
+
+// //  "third Sunday of April 2013"
+//   const res62 = meetup(2013, 4, "third", "Sunday") //  .toEqual(new Date(2013, 3, 21));
+
+// ----------------------------------------
+
+// //  "fourth Monday of March 2013"
+//   const res63 = meetup(2013, 3, "fourth", "Monday")  //  .toEqual(new Date(2013, 2, 25));
+
+// //  "fourth Monday of April 2013"
+//   const res64 = meetup(2013, 4, "fourth", "Monday")  //  .toEqual(new Date(2013, 3, 22));
+
+// //  "fourth Tuesday of May 2013"
+//   const res65 = meetup(2013, 5, "fourth", "Tuesday") //  .toEqual(new Date(2013, 4, 28));
+
+// //  "fourth Tuesday of June 2013"
+//   const res66 = meetup(2013, 6, "fourth", "Tuesday") //  .toEqual(new Date(2013, 5, 25));
+
+// //  "fourth Wednesday of July 2013"
+//   const res67 = meetup(2013, 7, "fourth", "Wednesday") //  .toEqual(new Date(2013, 6, 24),);
+
+// //  "fourth Wednesday of August 2013"
+//   const res68 = meetup(2013, 8, "fourth", "Wednesday") //  .toEqual(new Date(2013, 7, 28),);
+
+// //  "fourth Thursday of September 2013"
+//   const res69 = meetup(2013, 9, "fourth", "Thursday")  //  .toEqual(new Date(2013, 8, 26),);
+
+// //  "fourth Thursday of October 2013"
+//   const res70 = meetup(2013, 10, "fourth", "Thursday") //  .toEqual(new Date(2013, 9, 24),);
+
+// //  "fourth Friday of November 2013"
+//   const res71 = meetup(2013, 11, "fourth", "Friday") //  .toEqual(new Date(2013, 10, 22),);
+
+// //  "fourth Friday of December 2013"
+//   const res72 = meetup(2013, 12, "fourth", "Friday") //  .toEqual(new Date(2013, 11, 27),);
+
+// //  "fourth Saturday of January 2013"
+//   const res73 = meetup(2013, 1, "fourth", "Saturday")  //  .toEqual(new Date(2013, 0, 26),);
+
+// //  "fourth Saturday of February 2013"
+//   const res74 = meetup(2013, 2, "fourth", "Saturday")  //  .toEqual(new Date(2013, 1, 23),);
+
+// //  "fourth Sunday of March 2013"
+//   const res75 = meetup(2013, 3, "fourth", "Sunday")  //  .toEqual(new Date(2013, 2, 24));
+
+// //  "fourth Sunday of April 2013"
+//   const res76 = meetup(2013, 4, "fourth", "Sunday")  //  .toEqual(new Date(2013, 3, 28));
+
+// ----------------------------------------
+
+// //  "last Monday of March 2013"
+//   const res77 = meetup(2013, 3, "last", "Monday")  //  .toEqual(new Date(2013, 2, 25));
+
+// //  "last Monday of April 2013"
+//   const res78 = meetup(2013, 4, "last", "Monday")  //  .toEqual(new Date(2013, 3, 29));
+
+// //  "last Tuesday of May 2013"
+//   const res79 = meetup(2013, 5, "last", "Tuesday") //  .toEqual(new Date(2013, 4, 28));
+
+// //  "last Tuesday of June 2013, () => {
+//   const res80 = meetup(2013, 6, "last", "Tuesday") //  .toEqual(new Date(2013, 5, 25));
+
+// //  "last Wednesday of July 2013"
+//   const res81 = meetup(2013, 7, "last", "Wednesday") //  .toEqual(new Date(2013, 6, 31));
+
+// //  "last Wednesday of August 2013"
+//   const res82 = meetup(2013, 8, "last", "Wednesday") //  .toEqual(new Date(2013, 7, 28));
+
+// //  "last Thursday of September 2013"
+//   const res83 = meetup(2013, 9, "last", "Thursday")  //  .toEqual(new Date(2013, 8, 26));
+
+// //  "last Thursday of October 2013"
+//   const res84 = meetup(2013, 10, "last", "Thursday") //  .toEqual(new Date(2013, 9, 31));
+
+// //  "last Friday of November 2013"
+//   const res85 = meetup(2013, 11, "last", "Friday") //  .toEqual(new Date(2013, 10, 29));
+
+// //  "last Friday of December 2013"
+//   const res86 = meetup(2013, 12, "last", "Friday") //  .toEqual(new Date(2013, 11, 27));
+
+// //  "last Saturday of January 2013"
+//   const res87 = meetup(2013, 1, "last", "Saturday")  //  .toEqual(new Date(2013, 0, 26));
+
+//  "last Saturday of February 2013"
+  const res88 = meetup(2013, 2, "last", "Saturday")  //  .toEqual(new Date(2013, 1, 23));
+
+// //  "last Sunday of March 2013"
+//   const res89 = meetup(2013, 3, "last", "Sunday")  //  .toEqual(new Date(2013, 2, 31));
+
+// //  "last Sunday of April 2013"
+//   const res90 = meetup(2013, 4, "last", "Sunday")//  .toEqual(new Date(2013, 3, 28));
+
+// //  "last Wednesday of February 2012"
+//   const res91 = meetup(2012, 2, "last", "Wednesday") //  .toEqual(new Date(2012, 1, 29));
+
+// //  "last Wednesday of December 2014"
+//   const res92 = meetup(2014, 12, "last", "Wednesday") //  .toEqual(new Date(2014, 11, 31),);
+
+//  "last Sunday of February 2015"
+  const res93 = meetup(2015, 2, "last", "Sunday") //  .toEqual(new Date(2015, 1, 22));
+
+// //  "first Friday of December 2012"
+//   const res94 = meetup(2012, 12, "first", "Friday") //  .toEqual(new Date(2012, 11, 7));
+
+// ------------------------------------------
 
 // console.log(res0);
 // console.log(res1);
 // console.log(res2);
 // console.log(res3);
-console.log(res4);
-console.log(res5);
-console.log(res6);
-console.log(res7);
-console.log(res8);
-console.log(res9);
+// console.log(res4);
+// console.log(res5);
+// console.log(res6);
+// console.log(res7);
+// console.log(res8);
+// console.log(res9);
 // console.log(res10);
 // console.log(res11);
 // console.log(res12);
@@ -254,12 +360,15 @@ console.log(res9);
 // console.log(res14);
 // console.log(res15);
 // console.log(res16);
+// console.log(res17);
+// console.log(res18);
+// console.log(res19);
 // console.log(res20);
+
+// ----------------------------------------
+
 // console.log(res21);
 // console.log(res22);
-
-// -----------------------------------------------------
-
 // console.log(res23);
 // console.log(res24);
 // console.log(res25);
@@ -268,20 +377,17 @@ console.log(res9);
 // console.log(res28);
 // console.log(res29);
 // console.log(res30);
-
-// -----------------------------------------------------
-
 // console.log(res31);
 // console.log(res32);
 // console.log(res33);
 // console.log(res34);
+
+// ----------------------------------------
+
 // console.log(res35);
 // console.log(res36);
 // console.log(res37);
 // console.log(res38);
-
-// -----------------------------------------------------
-
 // console.log(res39);
 // console.log(res40);
 // console.log(res41);
@@ -292,9 +398,58 @@ console.log(res9);
 // console.log(res46);
 // console.log(res47);
 // console.log(res48);
+
+// ----------------------------------------
+
 // console.log(res49);
 // console.log(res50);
 // console.log(res51);
 // console.log(res52);
 // console.log(res53);
 // console.log(res54);
+// console.log(res55);
+// console.log(res56);
+// console.log(res57);
+// console.log(res58);
+// console.log(res59);
+// console.log(res60);
+// console.log(res61);
+// console.log(res62);
+
+// ----------------------------------------
+
+// console.log(res63);
+// console.log(res64);
+// console.log(res65);
+// console.log(res66);
+// console.log(res67);
+// console.log(res68);
+// console.log(res69);
+// console.log(res70);
+// console.log(res71);
+// console.log(res72);
+// console.log(res73);
+// console.log(res74);
+// console.log(res75);
+// console.log(res76);
+
+// ----------------------------------------
+
+// console.log(res77);
+// console.log(res78);
+// console.log(res79);
+// console.log(res80);
+// console.log(res81);
+// console.log(res82);
+// console.log(res83);
+// console.log(res84);
+// console.log(res85);
+// console.log(res86);
+// console.log(res87);
+console.log(res88);
+// console.log(res89);
+// console.log(res90);
+// console.log(res91);
+// console.log(res92);
+console.log(res93);
+// console.log(res94);
