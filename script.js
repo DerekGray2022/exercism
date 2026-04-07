@@ -13,41 +13,71 @@
 
 // --------------------------------------------
 
+const allergyObject = {
+  1: "eggs",
+  2: "peanuts",
+  4: "shellfish",
+  8: "strawberries",
+  16: "tomatoes",
+  32: "chocolate",
+  64: "pollen",
+  128: "cats",
+};
+
 class Allergies {
   constructor(num) {
     this.number = num;
     this.iterator = 1;
     this.allergyArray = [];
 
+    while (this.number > 255) this.number -= 256;
+
+    //#region Collect allergy indices
     while (this.number > 0) {
+      while (this.iterator > this.number) this.iterator /= 2;
       const condition = Math.floor(this.number / this.iterator) === 1;
       if (condition) {
         this.number -= this.iterator;
         this.allergyArray.push(this.iterator);
-        this.iterator /= 2;
-      }
-      else {
+        this.iterator === 1 ? this.iterator = 0 : this.iterator /= 2;
+      } else {
         this.iterator *= 2;
       }
     }
+    //#endregion
   }
 
-  list() {}
+  list() {
+    const listArray = [];
+    for (const id of this.allergyArray) {
+      listArray.push(allergyObject[id]);
+    }
+    listArray.reverse();
+
+    return listArray;
+  }
 
   allergicTo(allergy) {
-    return this.number / this.iterator;
+    if (this.allergyArray.length > 0) {
+      for (const id of this.allergyArray) {
+        if (allergyObject[id] === allergy) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }
-
 // ---------------------------------------------
 
 //  Allergies
 
 //  testing for eggs allergy
 
-//  not allergic to anything
-const allergies0 = new Allergies(255);
-const res0 = allergies0.allergicTo("eggs"); //  .toEqual(false);
+// //  not allergic to anything
+// const allergies0 = new Allergies(0);
+// const res0 = allergies0.allergicTo("eggs"); //  .toEqual(false);
 
 // //  allergic only to eggs
 // const allergies1 = new Allergies(1);
@@ -237,95 +267,119 @@ const res0 = allergies0.allergicTo("eggs"); //  .toEqual(false);
 
 //  list when:
 
-// //  no allergies
-//   const allergies40 = new Allergies(0);
-//   const res40 = allergies40.list() //  .toEqual([]);
+//  no allergies
+  const allergies40 = new Allergies(0);
+  const res40 = allergies40.list() //  .toEqual([]);
 
-// //  just eggs
-//   const allergies41 = new Allergies(1);
-//   const res41 = allergies41.list()  //  .toEqual(["eggs"]);
+//  just eggs
+  const allergies41 = new Allergies(1);
+  const res41 = allergies41.list()  //  .toEqual(["eggs"]);
 
-// //  just peanuts
-//   const allergies42 = new Allergies(2);
-//   const res42 = allergies42.list() //  .toEqual(["peanuts"]);
+//  just peanuts
+  const allergies42 = new Allergies(2);
+  const res42 = allergies42.list() //  .toEqual(["peanuts"]);
 
-// //  just strawberries
-//   const allergies43 = new Allergies(8);
-//   const res43 = allergies43.list()  //  .toEqual(["strawberries"]);
+//  just strawberries
+  const allergies43 = new Allergies(8);
+  const res43 = allergies43.list()  //  .toEqual(["strawberries"]);
 
-// //  eggs and peanuts
-//   const allergies44 = new Allergies(3);
-//   const res44 = allergies44.list() //  .toEqual(["eggs", "peanuts"]);
+//  eggs and peanuts
+  const allergies44 = new Allergies(3);
+  const res44 = allergies44.list() //  .toEqual(["eggs", "peanuts"]);
 
-// //  more than eggs but not peanuts
-//   const allergies45 = new Allergies(5);
-//   const res45 = allergies45.list() //  .toEqual(["eggs", "shellfish"]);
+//  more than eggs but not peanuts
+  const allergies45 = new Allergies(5);
+  const res45 = allergies45.list() //  .toEqual(["eggs", "shellfish"]);
 
-// //  lots of stuff
-//   const allergies46 = new Allergies(248);
-//   const res46 = allergies46.list() //  .toEqual(["strawberries", "tomatoes", "chocolate", "pollen", "cats",]);
+//  lots of stuff
+  const allergies46 = new Allergies(248);
+  const res46 = allergies46.list() //  .toEqual(["strawberries", "tomatoes", "chocolate", "pollen", "cats",]);
 
-// //  everything
-//   const allergies47 = new Allergies(255);
-//   const res47 = allergies47.list()  //  .toEqual(["eggs", "peanuts", "shellfish", "strawberries", "tomatoes", "chocolate", "pollen", "cats",]);
+//  everything
+  const allergies47 = new Allergies(255);
+  const res47 = allergies47.list()  //  .toEqual(["eggs", "peanuts", "shellfish", "strawberries", "tomatoes", "chocolate", "pollen", "cats",]);
 
-// //  no allergen score parts
-//   const allergies48 = new Allergies(509);
-//   const res48 = allergies48.list() //  .toEqual(["eggs", "shellfish", "strawberries", "tomatoes", "chocolate", "pollen", "cats",]);
+//  no allergen score parts
+  const allergies48 = new Allergies(509);
+  const res48 = allergies48.list() //  .toEqual(["eggs", "shellfish", "strawberries", "tomatoes", "chocolate", "pollen", "cats",]);
 
-// //  no allergen score parts without highest valid score
-//   const allergies49 = new Allergies(257);
-//   const res49 = allergies49.list() //  .toEqual(["eggs"]);
+//  no allergen score parts without highest valid score
+  const allergies49 = new Allergies(257);
+  const res49 = allergies49.list() //  .toEqual(["eggs"]);
 
 //-----------------------------------------------
 
-console.log(res0);
+// console.log(res0);
 // console.log(res1);
 // console.log(res2);
 // console.log(res3);
 // console.log(res4);
+
+//-----------------------------------------------
+
 // console.log(res5);
 // console.log(res6);
 // console.log(res7);
 // console.log(res8);
 // console.log(res9);
+
+//-----------------------------------------------
+
 // console.log(res10);
 // console.log(res11);
 // console.log(res12);
 // console.log(res13);
 // console.log(res14);
+
+//-----------------------------------------------
+
 // console.log(res15);
 // console.log(res16);
 // console.log(res17);
 // console.log(res18);
 // console.log(res19);
+
+//-----------------------------------------------
+
 // console.log(res20);
 // console.log(res21);
 // console.log(res22);
 // console.log(res23);
 // console.log(res24);
+
+//-----------------------------------------------
+
 // console.log(res25);
 // console.log(res26);
 // console.log(res27);
 // console.log(res28);
 // console.log(res29);
+
+//-----------------------------------------------
+
 // console.log(res30);
 // console.log(res31);
 // console.log(res32);
 // console.log(res33);
 // console.log(res34);
+
+//-----------------------------------------------
+
 // console.log(res35);
 // console.log(res36);
 // console.log(res37);
 // console.log(res38);
 // console.log(res39);
-// console.log(res40);
-// console.log(res41);
-// console.log(res42);
-// console.log(res43);
-// console.log(res44);
-// console.log(res45);
-// console.log(res46);
-// console.log(res47);
-// console.log(res48);
-// console.log(res49);
+
+//-----------------------------------------------
+
+console.log(res40);
+console.log(res41);
+console.log(res42);
+console.log(res43);
+console.log(res44);
+console.log(res45);
+console.log(res46);
+console.log(res47);
+console.log(res48);
+console.log(res49);
