@@ -1,121 +1,75 @@
 // go
 
-const valid = (str) => {
-  let total = 0;
-  // let regEx = /[\d]/g;
-  // let holder = [];
+const primeFactors = (no) => {
+  let workNo = no;
+  let workArray = [];
 
-  if (/[^0-9 ]/.test(str) || str.length < 2)  return false;
+  if(no < 2) return workArray;
 
-  str = Array.from(str.trim().replaceAll(" ", ""));
-  str.reverse();
-
-  // if (str.length < 2) return false;
-
-  for (let x = 0; x < str.length; x++) {
-    str[x] = Number(str[x]);
-
-    if (!str[x]) continue;
-    if (x % 2 === 1) str[x] *= 2;
-    if (str[x] > 9) str[x] -= 9;
-
-    total += str[x];
+  for (let x = 2; x <= no; x++) {
+    while (workNo % x === 0) {
+      workArray.push(x);
+      workNo /= x;
+      if (workNo <= 1) return workArray;
+    }  
   }
-
-  return total % 10 === 0 ? true : false;
 };
 
-// -------------------------------------------
+// -------------------------------------------------------------
 
-//  Luhn
+//  returns prime factors for the given input number
 
-// //  single digit strings can not be valid
-// const res0 = valid("1"); //  .toEqual(false);
+// //  no factors
+// const res0 = primeFactors(15); //  .toEqual([]));
 
-// //  a single zero is invalid
-// const res1 = valid("0"); //  .toEqual(false);
+// //  prime number
+// const res1 = primeFactors(2); //  .toEqual([2])
 
-// //  a simple valid SIN that remains valid if reversed
-// const res2 = valid("059"); //  .toEqual(true);
+// //  another prime number
+// const res2 = primeFactors(3); //  .toEqual([3])
 
-// //  a simple valid SIN that becomes invalid if reversed
-// const res3 = valid("59"); //  .toEqual(true);
+// //  square of a prime
+//    const res3 = primeFactors(9) //  .toEqual([3, 3])
 
-// //  a valid Canadian SIN
-// const res4 = valid("055 444 285"); //  .toEqual(true);
+// //  product of first prime
+//    const res4 = primeFactors(4) //  .toEqual([2, 2])
 
-// //  "invalid Canadian SIN
-// const res5 = valid("055 444 286"); //  .toEqual(false);
+// //  cube of a prime
+//    const res5 = primeFactors(8) //  .toEqual([2, 2, 2])
 
-// //  invalid credit card
-// const res6 = valid("8273 1232 7352 0569"); //  .toEqual(false);
+// //  product of second prime
+//   const res6 = primeFactors(27) //  .toEqual([3, 3, 3])
 
-// //  invalid long number with an even remainder
-// const res7 = valid("1 2345 6789 1234 5678 9012"); //  .toEqual(false);
 
-// //  invalid long number with a remainder divisible by 5
-// const res8 = valid("1 2345 6789 1234 5678 9013"); //  .toEqual(false);
+// //  product of third prime
+//   const res7 = primeFactors(625) //  .toEqual([5, 5, 5, 5])
 
-// //  valid number with an even number of digits
-// const res9 = valid("095 245 88"); //  .toEqual(true);
+// //  product of first prime and second prime
+//   const res8 = primeFactors(6)  //  .toEqual([2, 3])
 
-// //  valid number with an odd number of spaces
-// const res10 = valid("234 567 891 234"); //  .toEqual(true);
+// //  product of primes and non-primes
+//   const res9 = primeFactors(12) //  .toEqual([2, 2, 3])
 
-// //  valid strings with a non-digit added at the end invalid
-// const res11 = valid("059a"); //  .toEqual(false);
+// //  product of primes
+//   const res10 = primeFactors(901255) //  .toEqual([5, 17, 23, 461])
 
-// //  valid strings with punctuation included become invalid
-//   const res12 = valid("055-444-285") //  .toEqual(false);
+// //  factors include a large prime
+//   const res11 = primeFactors(93819012551)  //  .toEqual([11, 9539, 894119])
 
-// //  valid strings with symbols included become invalid
-//   const res13 = valid("055# 444$ 285") //  .toEqual(false);
+  //-----------------------------------------------------
 
-// //  single zero with space is invalid
-//   const res14 = valid(" 0")  //  .toEqual(false);
+  // console.log(res0);
+  // console.log(res1);
+  // console.log(res2);
+  // console.log(res3);
+  // console.log(res4);
+  // console.log(res5);
+  // console.log(res6);
+  // console.log(res7);
+  // console.log(res8);
+  // console.log(res9);
+  // console.log(res10);
+  // console.log(res11);
+  
 
-// //  more than a single zero is valid
-//   const res15 = valid("0000 0")  //  .toEqual(true);
-
-// //  input digit 9 is correctly converted to output digit 9
-//   const res16 = valid("091") //  .toEqual(true);
-
-// //  very long input is valid
-//   const res17 = valid("9999999999 9999999999 9999999999 9999999999")  //  .toEqual(true);
-
-// //  valid luhn with an odd number of digits and non zero first digit
-//   const res18 = valid("109") //  .toEqual(true);
-
-// //  using ascii value for non-doubled non-digit isn't allowed
-//   const res19 = valid("055b 444 285")  //  .toEqual(false);
-
-//  using ascii value for doubled non-digit isn't allowed
-const res20 = valid(":9"); //  .toEqual(false);
-
-//  non-numeric, non-space char in the middle with a sum that's divisible by 10 isn't allowed
-const res21 = valid("59%59"); //  .toEqual(false);
-
-// ------------------------------------------
-
-// console.log(res0);
-// console.log(res1);
-// console.log(res2);
-// console.log(res3);
-// console.log(res4);
-// console.log(res5);
-// console.log(res6);
-// console.log(res7);
-// console.log(res8);
-// console.log(res9);
-// console.log(res10);
-// console.log(res11);
-// console.log(res12);
-// console.log(res13);
-// console.log(res14);
-// console.log(res15);
-// console.log(res16)
-// console.log(res17);
-// console.log(res18);
-// console.log(res19);
-console.log(res20);
-console.log(res21);
+  module.exports = primeFactors;

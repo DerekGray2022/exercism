@@ -2,6 +2,14 @@
     "name": "exercism",
     "version": "1.0.0",
     "description": "",
+    "homepage": "https://github.com/DerekGray2022/exercism#readme",
+    "bugs": {
+        "url": "https://github.com/DerekGray2022/exercism/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DerekGray2022/exercism.git"
+    },
     "license": "ISC",
     "author": "",
     "type": "module",
@@ -11,5 +19,8 @@
     },
     "dependencies": {
         "jest": "^30.3.0"
+    },
+    "transform": {
+
     }
 }
