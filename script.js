@@ -1,75 +1,82 @@
 // go
 
-const primeFactors = (no) => {
-  let workNo = no;
-  let workArray = [];
+const square = (num) => {
+  num = BigInt(num)
+  if (num < 1 || num > 64) throw new Error("square must be between 1 and 64");
 
-  if(no < 2) return workArray;
-
-  for (let x = 2; x <= no; x++) {
-    while (workNo % x === 0) {
-      workArray.push(x);
-      workNo /= x;
-      if (workNo <= 1) return workArray;
-    }  
-  }
+  return 2n**(num - 1n);
 };
 
-// -------------------------------------------------------------
+const total = () => {
+  let tot = 0n;
+  let x = BigInt(1);
+  for (x = 1n; x <= 64n; x++) {
+    tot += 2n**(x - 1n);
+  }
+  return tot;
+};
 
-//  returns prime factors for the given input number
+// ------------------------------------------------
 
-// //  no factors
-// const res0 = primeFactors(15); //  .toEqual([]));
+//  Grains
 
-// //  prime number
-// const res1 = primeFactors(2); //  .toEqual([2])
+  //  returns the number of grains on the square
 
-// //  another prime number
-// const res2 = primeFactors(3); //  .toEqual([3])
+    //  grains on square 1
+      const res0 = square(1).toString() //  .toEqual("1");
 
-// //  square of a prime
-//    const res3 = primeFactors(9) //  .toEqual([3, 3])
+    //  grains on square 2
+      const res1 = square(2).toString() //  .toEqual("2");
 
-// //  product of first prime
-//    const res4 = primeFactors(4) //  .toEqual([2, 2])
+    //  grains on square 3
+      const res2 = square(3).toString() //  .toEqual("4");
 
-// //  cube of a prime
-//    const res5 = primeFactors(8) //  .toEqual([2, 2, 2])
+    //  grains on square 4
+      const res3 = square(4).toString() //  .toEqual("8");
 
-// //  product of second prime
-//   const res6 = primeFactors(27) //  .toEqual([3, 3, 3])
+    //  grains on square 16
+      const res4 = square(16).toString()  //  .toEqual("32768");
+
+    //  grains on square 32
+      const res5 = square(32).toString()  //  .toEqual("2147483648");
+
+    //  grains on square 64
+      const res6 = square(64).toString()  //  .toEqual("9223372036854775808");
+
+    // //  square 0 raises an exception
+    //   const res7 = () => square(0)  //  .toThrow(new Error("square must be between 1 and 64"),);
+
+    // //  negative square raises an exception
+    //   const res8 = () => square(-1) //  .toThrow(new Error("square must be between 1 and 64"),);
+
+    // //  square greater than 64 raises an exception
+    //   const res9 = () => square(65) //  .toThrow(new Error("square must be between 1 and 64"),);
+
+  //  returns the total number of grains on the board
+    const res10 = total().toString() //  .toEqual("18446744073709551615");
+
+    // -------------------------------------------
+
+    console.log(res0);
+    console.log(res1);
+    console.log(res2);
+    console.log(res3);
+    console.log(res4);
+    console.log(res5);
+    console.log(res6);
+    // console.log(res7());
+    // console.log(res8());
+    // console.log(res9());
+    console.log(res10);
 
 
-// //  product of third prime
-//   const res7 = primeFactors(625) //  .toEqual([5, 5, 5, 5])
 
-// //  product of first prime and second prime
-//   const res8 = primeFactors(6)  //  .toEqual([2, 3])
 
-// //  product of primes and non-primes
-//   const res9 = primeFactors(12) //  .toEqual([2, 2, 3])
 
-// //  product of primes
-//   const res10 = primeFactors(901255) //  .toEqual([5, 17, 23, 461])
 
-// //  factors include a large prime
-//   const res11 = primeFactors(93819012551)  //  .toEqual([11, 9539, 894119])
 
-  //-----------------------------------------------------
 
-  // console.log(res0);
-  // console.log(res1);
-  // console.log(res2);
-  // console.log(res3);
-  // console.log(res4);
-  // console.log(res5);
-  // console.log(res6);
-  // console.log(res7);
-  // console.log(res8);
-  // console.log(res9);
-  // console.log(res10);
-  // console.log(res11);
-  
 
-  module.exports = primeFactors;
+
+
+
