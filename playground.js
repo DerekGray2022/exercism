@@ -1,45 +1,34 @@
 // go
 
-class Clock {
-  constructor(hrs, mins) {
-    this.hrs = hrs ? hrs : 0;
-    this.mins = mins ? mins : 0;
-    this.minPlus = 0;
+function triplets({ minFactor = {}, maxFactor = {}, sum }) {
+  let outArray = [];
+  let tempArray = [];
+  let isPresent = false;
+
+  for (let x = 1; x < sum; x++) {
+    for (let y = 1; y < sum; y++) {
+      for (let z = 1; z < sum; z++) {
+        if (x ** 2 + y ** 2 === z ** 2 && x + y + z === sum) {
+          tempArray = [x, y, z];
+          tempArray.sort((a, b) => a - b);
+          if (outArray.length > 0) {
+            outArray.forEach((array) => {
+              if (array[0] === tempArray[0]) {
+                isPresent = true;
+              }
+            });
+          } 
+          !isPresent && outArray.push(tempArray);
+          isPresent = false;
+
+          // outArray.push(tempArray);
+        }
+      }
+    }
   }
 
-  get Mins(){
-    //#region Deal with Minutes
-    this.mins = this.mins % 60;
-    this.minPlus = parseInt(this.mins / 60);
-    if (this.mins < 60 && this.mins > -60 && this.mins !== 0) {
-      this.minPlus -= 1;
-    }
-    if (this.mins < 0) {
-      this.mins = 60 + this.mins;
-    }
-    //#endregion
-  }
-
-  get Hours() {
-    //#region Deal with hours
-    this.hrs = this.hrs + this.minPlus;
-    this.hrs = this.hrs % 24;
-    if (this.hrs < 0) {
-      this.hrs = 24 + this.hrs;
-    }
-    if (this.hrs > 24) {
-      this.hrs = this.hrs % 24;
-    }
-    //#endregion
-  }
-
-  toString() {
-    let mm = this.Mins;
-    let hh = this.Hours;
-  }
+  return outArray;
 }
 
-// on the hour
-const res0 = new Clock(8).toString(); //  .toEqual('08:00');
-
-console.log(res0);
+const res = triplets({ sum: 90 });
+console.log(res);
