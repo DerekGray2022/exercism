@@ -1,216 +1,165 @@
 // go
 
-class Palindromes {
-  constructor() {
-    this.smallest = {};
-    this.largest = {};
-  }
-  static generate(factors) {
-    this.max = factors.maxFactor;
-    this.min = factors.minFactor;
-    let palArray = [];
-    let retArray = [];
-
-    if (this.min > this.max) throw new Error("min must be <= max");
-    
-
-    //#region Create factors from MIN to MAX
-    for (let x = this.min; x <= this.max; x++) {
-      for (let y = x; y <= this.max; y++) {
-        if (retArray.includes(x * y)) {
-          continue;
-        }
-        retArray.push(x * y);
-      }
-    }
-    //#endregion
-
-    //#region Find Palindromic Numbers
-    retArray.forEach((No) => {
-      let noString = No.toString();
-      let noArray = noString.split("").reverse();
-      let noNo = Number(noArray.toString().replaceAll(",", ""));
-      if (noNo === No) {
-        palArray.push(No);
-      }
-    });
-    //#endregion
-
-    palArray = palArray.sort((a, b) => a - b);
-    this.small(palArray);
-    this.large(palArray);
-    return this;
-  }
-
-  static small(palArray) {
-    let factArray = [];
-    let minimum = palArray[0];
-    let tA = [];
-
-    for (let x = this.min; x <= minimum; x++) {
-      for (let y = x; y <= minimum; y++) {
-        if (x * y === minimum) {
-          tA.push(x, y);
-          factArray.push(tA);
-          tA = [];
-        }
-      }
-    }
-
-    !minimum && (minimum = null);
-
-    this.smallest = {
-      value: minimum,
-      factors: factArray,
-    };
-    return this.smallest;
-  }
-
-  static large(palArray) {
-    let factArray = [];
-    let maximum = palArray[palArray.length - 1];
-    let tA = [];
-
-    for (let x = this.min; x <= this.max; x++) {
-      for (let y = x; y <= this.max; y++) {
-        if (x * y === maximum) {
-          tA.push(x, y);
-          factArray.push(tA);
-          tA = [];
-        }
-      }
-    }
-
-    !maximum && (maximum = null);
-
-    this.largest = {
-      value: maximum,
-      factors: factArray,
-    };
-    return this.largest;
-  }
+const getString = (word) => {
+  return word.toLowerCase().split("").sort().toString().replaceAll(",", "");
+  // return word;
 }
 
-// --------------------------------------------
+const findAnagrams = (word, choices) => {
+  const retArray = [];
+  let controlWord = getString(word);
 
-function sortFactors(factors) {
-  return factors.map((f) => f.sort()).sort();
-}
+  choices.forEach((choice) => {
+    let testWord = getString(choice);
+    if (testWord === controlWord && choice.toLowerCase() !== word.toLowerCase()) {
+      retArray.push(choice);
+    }
+  });
 
-// --------------------------------------------
+  return retArray;
+};
 
-//  Palindromes
+// -----------------------------------------------
 
-// //  smallest palindrome from single digit factors
-// const palindromes0 = Palindromes.generate({ maxFactor: 9, minFactor: 1 });
-// const smallest0 = palindromes0.smallest;
-// const expected0 = { value: 1, factors: [[1, 1]] };
-// const res0 = smallest0.value //  .toEqual(expected.value);
-// const res0a = sortFactors(smallest0.factors)  //  .toEqual(expected.factors);
+const areSetsEqual = (setA, setB) => {
+  return setA.size === setB.size && [...setA].every((val) => setB.has(val));
+};
 
-  // //  largest palindrome from single digit factors
-  //   const palindromes1 = Palindromes.generate({ maxFactor: 9, minFactor: 1 });
-  //   const largest1 = palindromes1.largest;
-  //   const expected1 = { value: 9, factors: [[1, 9], [3, 3],],};
-  //   const res1 = largest1.value  //  .toEqual(expected.value);
-  //   const res1a = sortFactors(largest1.factors) //  .toEqual(expected.factors);
+// -----------------------------------------------
 
-  // //  smallest palindrome from double digit factors
-  //   const palindromes2 = Palindromes.generate({ maxFactor: 99, minFactor: 10 });
-  //   const smallest2 = palindromes2.smallest;
-  //   const expected2 = { value: 121, factors: [[11, 11]] };
-  //   const res2 = smallest2.value //  .toEqual(expected.value);
-  //   const res2a = sortFactors(smallest2.factors) //  .toEqual(expected.factors);
+//  Anagram
 
-  // //  largest palindrome from double digit factors
-  //   const palindromes3 = Palindromes.generate({ maxFactor: 99, minFactor: 10 });
-  //   const largest3 = palindromes3.largest;
-  //   const expected3 = { value: 9009, factors: [[91, 99]] };
-  //   const res3 = largest3.value  //  .toEqual(expected.value);
-  //   const res3a = sortFactors(largest3.factors) //  .toEqual(expected.factors);
+//  "no matches
+const expected0 = [];
+const actual0 = findAnagrams("diaper", ["hello", "world", "zombies", "pants"]);
+const res0 = areSetsEqual(new Set(expected0), new Set(actual0)); //  .toEqual(true);
 
-  // //  smallest palindrome from triple digit factors
-  //   const palindromes4 = Palindromes.generate({maxFactor: 999, minFactor: 100,});
-  //   const smallest4 = palindromes4.smallest;
-  //   const expected4 = { value: 10201, factors: [[101, 101]] };
-  //   const res4 = smallest4.value //  .toEqual(expected.value);
-  //   const res4a = sortFactors(smallest4.factors)  //  .toEqual(expected.factors);
+//  detects two anagrams
+  const expected1 = ["lemons", "melons"];
+  const actual1 = findAnagrams("solemn", ["lemons", "cherry", "melons"]);
+  const res1 = areSetsEqual(new Set(expected1), new Set(actual1)) //  .toEqual(true);
 
-  // //  largest palindrome from triple digit factors
-  //   const palindromes5 = Palindromes.generate({maxFactor: 999, minFactor: 100,});
-  //   const largest5 = palindromes5.largest;
-  //   const expected5 = { value: 906609, factors: [[913, 993]] };
-  //   const res5 = largest5.value  //  .toEqual(expected.value);
-  //   const res5a = sortFactors(largest5.factors) //  .toEqual(expected.factors);
+//  does not detect anagram subsets
+  const expected2 = [];
+  const actual2 = findAnagrams("good", ["dog", "goody"]);
+  const res2 = areSetsEqual(new Set(expected2), new Set(actual2)) //  .toEqual(true);
 
-  // //  smallest palindrome from four digit factors
-  //   const palindromes6 = Palindromes.generate({maxFactor: 9999, minFactor: 1000,});
-  //   const smallest6 = palindromes6.smallest;
-  //   const expected6 = { value: 1002001, factors: [[1001, 1001]] };
-  //   const res6 =smallest6.value //  .toEqual(expected.value);
-  //   const res6a = sortFactors(smallest6.factors)  //  .toEqual(expected.factors);
+//  detects anagram
+  const expected3 = ["inlets"];
+  const actual3 = findAnagrams("listen", [
+    "enlists",
+    "google",
+    "inlets",
+    "banana",
+  ]);
+  const res3 = areSetsEqual(new Set(expected3), new Set(actual3)) //  .toEqual(true);
 
-//   // This test doesn't run on our online test runner because it will time-out
+//  detects three anagrams
+  const expected4 = ["gallery", "regally", "largely"];
+  const actual4 = findAnagrams("allergy", [
+    "gallery",
+    "ballerina",
+    "regally",
+    "clergy",
+    "largely",
+    "leading",
+  ]);
+  const res4 = areSetsEqual(new Set(expected4), new Set(actual4)) //  .toEqual(true);
 
-//   // with most implementations. It's up to you to test your solution locally.
+//  detects multiple anagrams with different case
+  const expected5 = ["Eons", "ONES"];
+  const actual5 = findAnagrams("nose", ["Eons", "ONES"]);
+  const res5 = areSetsEqual(new Set(expected5), new Set(actual5)) //  .toEqual(true);
 
-//   // largest palindrome from four digit factors
-//       const palindromes7 = Palindromes.generate({maxFactor: 9999, minFactor: 1000,});
-//       const largest7 = palindromes7.largest;
-//       const expected7 = { value: 99000099, factors: [[9901, 9999]] };
-//       const res7 = largest7.value  //  .toEqual(expected.value);
-//       const res7a = sortFactors(largest7.factors) //  .toEqual(expected.factors);
+//  does not detect non-anagrams with identical checksum
+  const expected6 = [];
+  const actual6 = findAnagrams("mass", ["last"]);
+  const res6 = areSetsEqual(new Set(expected6), new Set(actual6)) //  .toEqual(true);
 
-  // //  empty result for smallest if no palindrome in range
-  //   const palindromes8 = Palindromes.generate({maxFactor: 1003, minFactor: 1002,});
-  //   const smallest8 = palindromes8.smallest;
-  //   const res8 = smallest8.value //  .toBe(null);
-  //   const res8a = smallest8.factors //  .toEqual([]);
+//  detects anagrams case-insensitively
+  const expected7 = ["Carthorse"];
+  const actual7 = findAnagrams("Orchestra", [
+    "cashregister",
+    "Carthorse",
+    "radishes",
+  ]);
+  const res7 = areSetsEqual(new Set(expected7), new Set(actual7)) //  .toEqual(true);
 
-  // //  empty result for largest if no palindrome in range
-  //   const palindromes9 = Palindromes.generate({ maxFactor: 15, minFactor: 15 });
-  //   const largest9 = palindromes9.largest;
-  //   const res9 = largest9.value  //  .toBe(null);
-  //   const res9a = largest9.factors  //  .toEqual([]);
+//  detects anagrams using case-insensitive subject
+  const expected8 = ["carthorse"];
+  const actual8 = findAnagrams("Orchestra", [
+    "cashregister",
+    "carthorse",
+    "radishes",
+  ]);
+  const res8 = areSetsEqual(new Set(expected8), new Set(actual8)) //  .toEqual(true);
 
-  // //  error for smallest if min is more than max
-  //     const palindromes10 = Palindromes.generate({maxFactor: 1, minFactor: 10000,});
-  //     const res10 = palindromes10.smallest; //  .toThrow(new Error("min must be <= max"));
+//  detects anagrams using case-insensitive possible matches
+  const expected9 = ["Carthorse"];
+  const actual9 = findAnagrams("orchestra", [
+    "cashregister",
+    "Carthorse",
+    "radishes",
+  ]);
+  const res9 = areSetsEqual(new Set(expected9), new Set(actual9)) //  .toEqual(true);
 
-  // //  error for largest if min is more than max
-  //     const palindromes11 = Palindromes.generate({ maxFactor: 1, minFactor: 2 });
-  //     const res11 = palindromes11.largest;  // .toThrow(new Error("min must be <= max"));
+//  does not detect an anagram if the original word is repeated
+  const expected10 = [];
+  const actual10 = findAnagrams("go", ["goGoGO"]);
+  const res10 = areSetsEqual(new Set(expected10), new Set(actual10)) //  .toEqual(true);
 
-// //  smallest product does not use the smallest factor
-//   const palindromes12 = Palindromes.generate({maxFactor: 4000, minFactor: 3215,});
-//   const smallest12 = palindromes12.smallest;
-//   const expected12 = { value: 10988901, factors: [[3297, 3333]] };
-//   const res12 = smallest12.value //  .toEqual(expected.value);
-//   const res12a = sortFactors(smallest12.factors)  //  .toEqual(expected.factors);
+//  anagrams must use all letters exactly once
+  const expected11 = [];
+  const actual11 = findAnagrams("tapper", ["patter"]);
+  const res11 = areSetsEqual(new Set(expected11), new Set(actual11)) //  .toEqual(true);
 
-// ----------------------------------------------
+//  words are not anagrams of themselves
+  const expected12 = [];
+  const actual12 = findAnagrams("BANANA", ["BANANA"]);
+  const res12 = areSetsEqual(new Set(expected12), new Set(actual12)) //  .toEqual(true);
 
-// console.log(res0);
-// console.log(res0a);
-// console.log(res1);
-// console.log(res1a);
-// console.log(res2);
-// console.log(res2a);
-// console.log(res3);
-// console.log(res3a);
-// console.log(res4);
-// console.log(res4a);
-// console.log(res5);
-// console.log(res5a);
-// console.log(res6);
-// console.log(res6a);
-// console.log(res7);
-// console.log(res7a);
-// console.log(res8);
-// console.log(res8a);
-// console.log(res9);
-// console.log(res9a);
-// console.log(res10);
-// console.log(res11);
-// console.log(res12);
-// console.log(res12a);
+//  words are not anagrams of themselves even if letter case is partially different
+  const expected13 = [];
+  const actual13 = findAnagrams("BANANA", ["Banana"]);
+  const res13 = areSetsEqual(new Set(expected13), new Set(actual13)) //  .toEqual(true);
+
+//  words are not anagrams of themselves even if letter case is completely different
+  const expected14 = [];
+  const actual14 = findAnagrams("BANANA", ["banana"]);
+  const res14 = areSetsEqual(new Set(expected14), new Set(actual14)) //  .toEqual(true);
+
+//  words other than themselves can be anagrams
+  const expected15 = ["Silent"];
+  const actual15 = findAnagrams("LISTEN", ["LISTEN", "Silent"]);
+  const res15 = areSetsEqual(new Set(expected15), new Set(actual15)) //  .toEqual(true);
+
+//  handles case of greek letters
+  const expected16 = ["ΒΓΑ", "γβα"];
+  const actual16 = findAnagrams("ΑΒΓ", ["ΒΓΑ", "ΒΓΔ", "γβα", "αβγ"]);
+  const res16 = areSetsEqual(new Set(expected16), new Set(actual16)) //  .toEqual(true);
+
+//  different characters may have the same bytes
+  const expected17 = [];
+  const actual17 = findAnagrams("a⬂", ["€a"]);
+  const res17 = areSetsEqual(new Set(expected17), new Set(actual17)) //  .toEqual(true);
+
+// -----------------------------------------------
+
+console.log(res0);
+console.log(res1);
+console.log(res2);
+console.log(res3);
+console.log(res4);
+console.log(res5);
+console.log(res6);
+console.log(res7);
+console.log(res8);
+console.log(res9);
+console.log(res10);
+console.log(res11);
+console.log(res12);
+console.log(res13);
+console.log(res14);
+console.log(res15);
+console.log(res16);
+console.log(res17);
