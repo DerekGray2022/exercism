@@ -1,165 +1,67 @@
 // go
 
-const getString = (word) => {
-  return word.toLowerCase().split("").sort().toString().replaceAll(",", "");
-  // return word;
-}
+const parse = (entry) => {
+  const regEx = /[a-z']+/gi;
+  let workArr = [...entry.matchAll(regEx)];
+  let res = "";
 
-const findAnagrams = (word, choices) => {
-  const retArray = [];
-  let controlWord = getString(word);
-
-  choices.forEach((choice) => {
-    let testWord = getString(choice);
-    if (testWord === controlWord && choice.toLowerCase() !== word.toLowerCase()) {
-      retArray.push(choice);
-    }
+  workArr.forEach(ele => {
+    res += ele[0][0].toUpperCase();
   });
 
-  return retArray;
+  return res;
 };
 
-// -----------------------------------------------
+// ---------------------------------------------
 
-const areSetsEqual = (setA, setB) => {
-  return setA.size === setB.size && [...setA].every((val) => setB.has(val));
-};
+//  Acronyms are produced from
 
-// -----------------------------------------------
+  // basic
+  //  title cased phrases
+    const res0 = parse("Portable Network Graphics") // .toEqual("PNG");
 
-//  Anagram
+  // lowercase words
+  //  other title cased phrases
+    const res1 = parse("Ruby on Rails") //  .toEqual("ROR");
 
-//  "no matches
-const expected0 = [];
-const actual0 = findAnagrams("diaper", ["hello", "world", "zombies", "pants"]);
-const res0 = areSetsEqual(new Set(expected0), new Set(actual0)); //  .toEqual(true);
+  // punctuation
+  //  phrases with punctuation
+    const res2 = parse("First In, First Out") //  .toEqual("FIFO");
 
-//  detects two anagrams
-  const expected1 = ["lemons", "melons"];
-  const actual1 = findAnagrams("solemn", ["lemons", "cherry", "melons"]);
-  const res1 = areSetsEqual(new Set(expected1), new Set(actual1)) //  .toEqual(true);
+  // all caps word
+  //  phrases with all uppercase words
+    const res3 = parse("GNU Image Manipulation Program")  //  .toEqual("GIMP");
 
-//  does not detect anagram subsets
-  const expected2 = [];
-  const actual2 = findAnagrams("good", ["dog", "goody"]);
-  const res2 = areSetsEqual(new Set(expected2), new Set(actual2)) //  .toEqual(true);
+  // punctuation without whitespace
+  //  phrases with punctuation without whitespace
+    const res4 = parse("Complementary metal-oxide semiconductor") //  .toEqual("CMOS");
 
-//  detects anagram
-  const expected3 = ["inlets"];
-  const actual3 = findAnagrams("listen", [
-    "enlists",
-    "google",
-    "inlets",
-    "banana",
-  ]);
-  const res3 = areSetsEqual(new Set(expected3), new Set(actual3)) //  .toEqual(true);
+  // very long abbreviation
+  //  long phrases
+    const res5 = parse("Rolling On The Floor Laughing So Hard That My Dogs Came Over And Licked Me",
+      ) //  .toEqual("ROTFLSHTMDCOALM");
 
-//  detects three anagrams
-  const expected4 = ["gallery", "regally", "largely"];
-  const actual4 = findAnagrams("allergy", [
-    "gallery",
-    "ballerina",
-    "regally",
-    "clergy",
-    "largely",
-    "leading",
-  ]);
-  const res4 = areSetsEqual(new Set(expected4), new Set(actual4)) //  .toEqual(true);
+  // consecutive delimiters
+  //  phrases with consecutive delimiters
+    const res6 = parse("Something - I made up from thin air") //  .toEqual("SIMUFTA");
 
-//  detects multiple anagrams with different case
-  const expected5 = ["Eons", "ONES"];
-  const actual5 = findAnagrams("nose", ["Eons", "ONES"]);
-  const res5 = areSetsEqual(new Set(expected5), new Set(actual5)) //  .toEqual(true);
+  // apostrophes
+  //  phrases with apostrophes
+    const res7 = parse("Halley's Comet")  //  .toEqual("HC");
 
-//  does not detect non-anagrams with identical checksum
-  const expected6 = [];
-  const actual6 = findAnagrams("mass", ["last"]);
-  const res6 = areSetsEqual(new Set(expected6), new Set(actual6)) //  .toEqual(true);
+  // underscore emphasis
+  //  phrases with underscore emphasis
+    const res8 = parse("The Road _Not_ Taken")  //  .toEqual("TRNT");
 
-//  detects anagrams case-insensitively
-  const expected7 = ["Carthorse"];
-  const actual7 = findAnagrams("Orchestra", [
-    "cashregister",
-    "Carthorse",
-    "radishes",
-  ]);
-  const res7 = areSetsEqual(new Set(expected7), new Set(actual7)) //  .toEqual(true);
+    // ------------------------------------------
 
-//  detects anagrams using case-insensitive subject
-  const expected8 = ["carthorse"];
-  const actual8 = findAnagrams("Orchestra", [
-    "cashregister",
-    "carthorse",
-    "radishes",
-  ]);
-  const res8 = areSetsEqual(new Set(expected8), new Set(actual8)) //  .toEqual(true);
-
-//  detects anagrams using case-insensitive possible matches
-  const expected9 = ["Carthorse"];
-  const actual9 = findAnagrams("orchestra", [
-    "cashregister",
-    "Carthorse",
-    "radishes",
-  ]);
-  const res9 = areSetsEqual(new Set(expected9), new Set(actual9)) //  .toEqual(true);
-
-//  does not detect an anagram if the original word is repeated
-  const expected10 = [];
-  const actual10 = findAnagrams("go", ["goGoGO"]);
-  const res10 = areSetsEqual(new Set(expected10), new Set(actual10)) //  .toEqual(true);
-
-//  anagrams must use all letters exactly once
-  const expected11 = [];
-  const actual11 = findAnagrams("tapper", ["patter"]);
-  const res11 = areSetsEqual(new Set(expected11), new Set(actual11)) //  .toEqual(true);
-
-//  words are not anagrams of themselves
-  const expected12 = [];
-  const actual12 = findAnagrams("BANANA", ["BANANA"]);
-  const res12 = areSetsEqual(new Set(expected12), new Set(actual12)) //  .toEqual(true);
-
-//  words are not anagrams of themselves even if letter case is partially different
-  const expected13 = [];
-  const actual13 = findAnagrams("BANANA", ["Banana"]);
-  const res13 = areSetsEqual(new Set(expected13), new Set(actual13)) //  .toEqual(true);
-
-//  words are not anagrams of themselves even if letter case is completely different
-  const expected14 = [];
-  const actual14 = findAnagrams("BANANA", ["banana"]);
-  const res14 = areSetsEqual(new Set(expected14), new Set(actual14)) //  .toEqual(true);
-
-//  words other than themselves can be anagrams
-  const expected15 = ["Silent"];
-  const actual15 = findAnagrams("LISTEN", ["LISTEN", "Silent"]);
-  const res15 = areSetsEqual(new Set(expected15), new Set(actual15)) //  .toEqual(true);
-
-//  handles case of greek letters
-  const expected16 = ["ΒΓΑ", "γβα"];
-  const actual16 = findAnagrams("ΑΒΓ", ["ΒΓΑ", "ΒΓΔ", "γβα", "αβγ"]);
-  const res16 = areSetsEqual(new Set(expected16), new Set(actual16)) //  .toEqual(true);
-
-//  different characters may have the same bytes
-  const expected17 = [];
-  const actual17 = findAnagrams("a⬂", ["€a"]);
-  const res17 = areSetsEqual(new Set(expected17), new Set(actual17)) //  .toEqual(true);
-
-// -----------------------------------------------
-
-console.log(res0);
-console.log(res1);
-console.log(res2);
-console.log(res3);
-console.log(res4);
-console.log(res5);
-console.log(res6);
-console.log(res7);
-console.log(res8);
-console.log(res9);
-console.log(res10);
-console.log(res11);
-console.log(res12);
-console.log(res13);
-console.log(res14);
-console.log(res15);
-console.log(res16);
-console.log(res17);
+    console.log(res0);
+    console.log(res1);
+    console.log(res2);
+    console.log(res3);
+    console.log(res4);
+    console.log(res5);
+    console.log(res6);
+    console.log(res7);
+    console.log(res8);
+    
