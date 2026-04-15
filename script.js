@@ -1,107 +1,95 @@
 // go
 
-class HighScores {
-  constructor(scores) {
-    this._scores = scores;
+const isIsogram = (wurd) => {
+  const regEx = /[a-z]+/g;
+  let testStr = "";
+  let chars = wurd.toLowerCase();
+  let isIso = true;
+  
+  //#region Build test string
+  chars = [...chars.matchAll(regEx)];
+  chars.forEach(char => {
+    testStr += char[0];
+  });
+  //#endregion
+
+//#region Test string for duplicate characters
+  if (wurd.length > 0) {
+    for (let x = 0; x < testStr.length; x++) {
+      for (let y = x + 1; y < testStr.length; y++) {
+        if (testStr[x] === testStr[y]) {
+          isIso = false;
+        }
+      }
+    }
   }
+  //#endregion
 
-  get scores() {
-    return this._scores;
-  }
+  return isIso;
+};
 
-  get latest() {
-    return this._scores[this._scores.length - 1];
-  }
+// --------------------------------------
 
-  get personalBest() {
-    return Math.max(...this._scores);
-  }
+//  Isogram
 
-  get personalTopThree() {
-    return [...this._scores].sort((a, b) => b - a).slice(0, 3);
-  }
-}
+  //  Check if the given string is an isogram
 
-// -------------------------------------------
+    // //  empty string
+    //   const res0 = isIsogram("")  //  .toEqual(true);
 
-//  High Scores Test Suite
+    // //  isogram with only lower case characters
+    //   const res1 = isIsogram("isogram") //  .toEqual(true);
 
-  //  List of scores
-    const input0 = [30, 50, 20, 70];
-    const res0 = new HighScores(input0).scores //  .toEqual([30, 50, 20, 70]);
+    // //  word with one duplicated character
+    //   const res2 = isIsogram("eleven")  //  .toEqual(false);
 
-  //  Latest score
-    const input1 = [100, 0, 90, 30];
-    const res1 = new HighScores(input1).latest //  .toEqual(30);
+    // //  word with one duplicated character from the end of the alphabet
+    //   const res3 = isIsogram("zzyzx") //  .toEqual(false);
 
-  //  Personal best
-    const input2 = [40, 100, 70];
-    const res2 = new HighScores(input2).personalBest //  .toEqual(100);
+    // //  longest reported english isogra", () => {
+    //   const res4 = isIsogram("subdermatoglyphic") //  .toEqual(true);
 
-// -------------------------------------------
+    // //  word with duplicated character in mixed case
+    //   const res5 = isIsogram("Alphabet")  //  .toEqual(false);
 
+    // //  word with duplicated character in mixed case, lowercase first
+    //   const res6 = isIsogram("alphAbet")  //  .toEqual(false);
 
-  //  Top 3 scores
+    // //  hypothetical isogrammic word with hyphen
+    //   const res7 = isIsogram("thumbscrew-japingly") //  .toEqual(true);
 
-    //  Personal top three from a list of scores
-      const input3 = [10, 30, 90, 30, 100, 20, 10, 0, 30, 40, 40, 70, 70];
-      const res3 = new HighScores(input3).personalTopThree //  .toEqual([100, 90, 70]);
+    // //  hypothetical word with duplicated character following hyphen
+    //   const res8 = isIsogram("thumbscrew-jappingly")  //  .toEqual(false);
 
-    //  Personal top highest to lowest
-      const input4 = [20, 10, 30];
-      const res4 = new HighScores(input4).personalTopThree //  .toEqual([30, 20, 10]);
+    //  isogram with duplicated hyphen
+      const res9 = isIsogram("six-year-old")  //  .toEqual(true);
 
-    //  Personal top when there is a tie
-      const input5 = [40, 20, 40, 30];
-      const res5 = new HighScores(input5).personalTopThree //  .toEqual([40, 40, 30]);
+    //  made-up name that is an isogram
+      const res10 = isIsogram("Emily Jung Schwartzkopf") //  .toEqual(true);
 
-    //  Personal top when there are less than 3
-      const input6 = [30, 70];
-      const res6 = new HighScores(input6).personalTopThree //  .toEqual([70, 30]);
+    //  duplicated character in the middle
+      const res11 = isIsogram("accentor")  //  .toEqual(false);
 
-    //  Personal top when there is only one
-      const input7 = [40];
-      const res7 = new HighScores(input7).personalTopThree //  .toEqual([40]);
+    //  same first and last characters
+      const res12 = isIsogram("angola")  //  .toEqual(false);
 
-    //  Latest score after personal top scores
-      const input8 = [70, 50, 20, 30];
-      const highScores8 = new HighScores(input8);
-      highScores8.personalTopThree;
-      const res8 = highScores8.latest  //  .toEqual(30);
+    //  word with duplicated character and with two hyphens
+      const res13 = isIsogram("up-to-date")  //  .toEqual(false);
 
-    //  Scores after personal top scores
-      const input9 = [30, 50, 20, 70];
-      const highScores9 = new HighScores(input9);
-      highScores9.personalTopThree;
-      const res9 = highScores9.scores  //  .toEqual(input);
+      // -----------------------------------------
 
-    //  Latest score after personal best
-      const input10 = [20, 70, 15, 25, 30];
-      const highScores10 = new HighScores(input10);
-      highScores10.personalBest;
-      const res10 = highScores10.latest  //  .toEqual(30);
-
-    //  Scores after personal best
-      const input11 = [20, 70, 15, 25, 30];
-      const highScores11 = new HighScores(input11);
-      highScores11.personalBest;
-      const res11 = highScores11.scores  //  .toEqual(input);
-
-// -------------------------------------------
-
-console.log(res0);
-console.log(res1);
-console.log(res2);
-
-// -------------------------------------------
-
-
-console.log(res3);
-console.log(res4);
-console.log(res5);
-console.log(res6);
-console.log(res7);
-console.log(res8);
-console.log(res9);
-console.log(res10);
-console.log(res11);
+      // console.log(res0);
+      // console.log(res1);
+      // console.log(res2);
+      // console.log(res3);
+      // console.log(res4);
+      // console.log(res5);
+      // console.log(res6);
+      // console.log(res7);
+      // console.log(res8);
+      console.log(res9);
+      console.log(res10);
+      console.log(res11);
+      console.log(res12);
+      console.log(res13);
+      
