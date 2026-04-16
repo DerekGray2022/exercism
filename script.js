@@ -1,95 +1,123 @@
 // go
 
-const isIsogram = (wurd) => {
-  const regEx = /[a-z]+/g;
-  let testStr = "";
-  let chars = wurd.toLowerCase();
-  let isIso = true;
-  
-  //#region Build test string
-  chars = [...chars.matchAll(regEx)];
-  chars.forEach(char => {
-    testStr += char[0];
-  });
-  //#endregion
+const isPaired = (input) => {
+  const regEx = /[\[\]\{\}\(\)]+/gm;
+  const openReg = /[\[\{\(]/g;
+  const parArr = [];
+  let brackets = "";
 
-//#region Test string for duplicate characters
-  if (wurd.length > 0) {
-    for (let x = 0; x < testStr.length; x++) {
-      for (let y = x + 1; y < testStr.length; y++) {
-        if (testStr[x] === testStr[y]) {
-          isIso = false;
-        }
+  if (input.length > 0) {
+    //#region Create string of brackets
+    for (let x = 0; x < input.length; x++) {
+      if (input[x].match(regEx)) brackets += input[x];
+    }
+    //#endregion
+
+    //#region Test for paired brackets
+    for (let x = 0; x < brackets.length; x++) {
+      if (brackets[x].match(openReg)) {
+        parArr.unshift(brackets[x]);
+        if (x === brackets.length - 1) return false;
+      } 
+      else if (parArr[0]) {
+        if (parArr[0] === "(" && brackets[x] !== ")") return false;
+        if (parArr[0] === "{" && brackets[x] !== "}") return false;
+        if (parArr[0] === "[" && brackets[x] !== "]") return false;
+        parArr.shift();
+      }
+      else {
+        return false;
       }
     }
+    //#endregion
   }
-  //#endregion
 
-  return isIso;
+  return true;
 };
 
-// --------------------------------------
+// ---------------------------------------------
 
-//  Isogram
+//  Matching Brackets
 
-  //  Check if the given string is an isogram
+//  paired square brackets
+const res0 = isPaired("[]"); //  .toEqual(true);
 
-    // //  empty string
-    //   const res0 = isIsogram("")  //  .toEqual(true);
+//  empty string
+const res1 = isPaired(""); //  .toEqual(true);
 
-    // //  isogram with only lower case characters
-    //   const res1 = isIsogram("isogram") //  .toEqual(true);
+//  unpaired brackets
+const res2 = isPaired("[["); //  .toEqual(false);
 
-    // //  word with one duplicated character
-    //   const res2 = isIsogram("eleven")  //  .toEqual(false);
+//  wrong ordered brackets
+const res3 = isPaired("}{"); //  .toEqual(false);
 
-    // //  word with one duplicated character from the end of the alphabet
-    //   const res3 = isIsogram("zzyzx") //  .toEqual(false);
+//  wrong closing bracket
+const res4 = isPaired("{]"); //  .toEqual(false);
 
-    // //  longest reported english isogra", () => {
-    //   const res4 = isIsogram("subdermatoglyphic") //  .toEqual(true);
+//  paired with whitespace
+const res5 = isPaired("{ }"); //  .toEqual(true);
 
-    // //  word with duplicated character in mixed case
-    //   const res5 = isIsogram("Alphabet")  //  .toEqual(false);
+//  partially paired brackets
+const res6 = isPaired("{[])"); //  .toEqual(false);
 
-    // //  word with duplicated character in mixed case, lowercase first
-    //   const res6 = isIsogram("alphAbet")  //  .toEqual(false);
+//  simple nested bracket", () => {
+const res7 = isPaired("{[]}"); //  .toEqual(true);
 
-    // //  hypothetical isogrammic word with hyphen
-    //   const res7 = isIsogram("thumbscrew-japingly") //  .toEqual(true);
+//  several paired brackets
+const res8 = isPaired("{}[]"); //  .toEqual(true);
 
-    // //  hypothetical word with duplicated character following hyphen
-    //   const res8 = isIsogram("thumbscrew-jappingly")  //  .toEqual(false);
+//  paired and nested brackets
+const res9 = isPaired("([{}({}[])])"); //  .toEqual(true);
 
-    //  isogram with duplicated hyphen
-      const res9 = isIsogram("six-year-old")  //  .toEqual(true);
+//  unopened closing brackets
+const res10 = isPaired("{[)][]}"); //  .toEqual(false);
 
-    //  made-up name that is an isogram
-      const res10 = isIsogram("Emily Jung Schwartzkopf") //  .toEqual(true);
+//  unpaired and nested brackets
+const res11 = isPaired("([{])"); //  .toEqual(false);
 
-    //  duplicated character in the middle
-      const res11 = isIsogram("accentor")  //  .toEqual(false);
+//  paired and wrong nested brackets
+const res12 = isPaired("[({]})"); //  .toEqual(false);
 
-    //  same first and last characters
-      const res12 = isIsogram("angola")  //  .toEqual(false);
+//  paired and wrong nested brackets but innermost are correct
+const res13 = isPaired("[({}])"); //  .toEqual(false);
 
-    //  word with duplicated character and with two hyphens
-      const res13 = isIsogram("up-to-date")  //  .toEqual(false);
+//  paired and incomplete brackets
+  const res14 = isPaired("{}[")  //  .toEqual(false);
 
-      // -----------------------------------------
+//  too many closing brackets
+  const res15 = isPaired("[]]")  //  .toEqual(false);
 
-      // console.log(res0);
-      // console.log(res1);
-      // console.log(res2);
-      // console.log(res3);
-      // console.log(res4);
-      // console.log(res5);
-      // console.log(res6);
-      // console.log(res7);
-      // console.log(res8);
-      console.log(res9);
-      console.log(res10);
-      console.log(res11);
-      console.log(res12);
-      console.log(res13);
-      
+//  early unexpected brackets
+  const res16 = isPaired(")()")  //  .toEqual(false);
+
+//  early mismatched brackets
+  const res17 = isPaired("{)()") //  .toEqual(false);
+
+//  math expression
+  const res18 = isPaired("(((185 + 223.85) * 15) - 543)/2")  //  .toEqual(true);
+
+//  complex latex expression
+  const res19 = isPaired("\\left(\\begin{array}{cc} \\frac{1}{3} & x\\\\ \\mathrm{e}^{x} &... x^2 \\end{array}\\right)",)  //  .toEqual(true);
+
+// ---------------------------------------------
+
+console.log(res0);
+console.log(res1);
+console.log(res2);
+console.log(res3);
+console.log(res4);
+console.log(res5);
+console.log(res6);
+console.log(res7);
+console.log(res8);
+console.log(res9);
+console.log(res10);
+console.log(res11);
+console.log(res12);
+console.log(res13);
+console.log(res14);
+console.log(res15);
+console.log(res16);
+console.log(res17);
+console.log(res18);
+console.log(res19);
