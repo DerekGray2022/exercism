@@ -1,123 +1,144 @@
 // go
 
-const isPaired = (input) => {
-  const regEx = /[\[\]\{\}\(\)]+/gm;
-  const openReg = /[\[\{\(]/g;
-  const parArr = [];
-  let brackets = "";
+const clean = (No) => {
+  let output = No.replaceAll(/[^0-9]+/g, "");
 
-  if (input.length > 0) {
-    //#region Create string of brackets
-    for (let x = 0; x < input.length; x++) {
-      if (input[x].match(regEx)) brackets += input[x];
-    }
-    //#endregion
+  // Letters & Punctuation
+  if (No.match(/[a-zA-Z]/gim)) throw new Error("Letters not permitted");
+  if (No.match(/[^\w\-\(\)\s\.\+]/gm))
+    throw new Error("Punctuations not permitted");
 
-    //#region Test for paired brackets
-    for (let x = 0; x < brackets.length; x++) {
-      if (brackets[x].match(openReg)) {
-        parArr.unshift(brackets[x]);
-        if (x === brackets.length - 1) return false;
-      } 
-      else if (parArr[0]) {
-        if (parArr[0] === "(" && brackets[x] !== ")") return false;
-        if (parArr[0] === "{" && brackets[x] !== "}") return false;
-        if (parArr[0] === "[" && brackets[x] !== "]") return false;
-        parArr.shift();
-      }
-      else {
-        return false;
-      }
-    }
-    //#endregion
-  }
+  // Number not right length
+  if (output.length < 10) throw new Error("Must not be fewer than 10 digits");
+  if (output.length > 11) throw new Error("Must not be greater than 11 digits");
 
-  return true;
+  // Test & process 11 digit number
+  if (output.length === 11 && output[0] !== "1")
+    throw new Error("11 digits must start with 1");
+  if (output.length === 11) output = output.slice(1);
+
+  // Test 10 digit number
+  if (output[0] === "0") throw new Error("Area code cannot start with zero");
+  if (output[3] === "0")
+    throw new Error("Exchange code cannot start with zero");
+  if (output[0] === "1") throw new Error("Area code cannot start with one");
+  if (output[3] === "1") throw new Error("Exchange code cannot start with one");
+
+  return output;
 };
 
-// ---------------------------------------------
+// ----------------------------------------------
 
-//  Matching Brackets
+//  Phone Number
 
-//  paired square brackets
-const res0 = isPaired("[]"); //  .toEqual(true);
+//  Cleanup user-entered phone numbers
 
-//  empty string
-const res1 = isPaired(""); //  .toEqual(true);
+//  cleans the number
+const res0 = clean("(223) 456-7890"); //  .toEqual("2234567890");
 
-//  unpaired brackets
-const res2 = isPaired("[["); //  .toEqual(false);
+//  cleans numbers with dots
+const res1 = clean("223.456.7890"); //  .toEqual("2234567890");
 
-//  wrong ordered brackets
-const res3 = isPaired("}{"); //  .toEqual(false);
+//  cleans numbers with multiple spaces
+const res2 = clean("223 456   7890   "); //  .toEqual("2234567890");
 
-//  wrong closing bracket
-const res4 = isPaired("{]"); //  .toEqual(false);
+// //  invalid when 9 digits
+// const res3 = () =>
+//   clean(
+//     "123456789",
+//   ); /*  .toThrow(new Error("Must not be fewer than 10 digits"),);  */
 
-//  paired with whitespace
-const res5 = isPaired("{ }"); //  .toEqual(true);
+// //  invalid when 11 digits does not start with a 1", () => {
+// const res4 = () =>
+//   clean(
+//     "22234567890",
+//   ); /*  .toThrow(new Error("11 digits must start with 1"),); */
 
-//  partially paired brackets
-const res6 = isPaired("{[])"); //  .toEqual(false);
+// //  valid when 11 digits and starting with 1
+// const res5 = clean("12234567890"); //  .toEqual("2234567890");
 
-//  simple nested bracket", () => {
-const res7 = isPaired("{[]}"); //  .toEqual(true);
+// //  valid when 11 digits and starting with 1 even with punctuation
+// const res6 = clean("+1 (223) 456-7890"); //  .toEqual("2234567890");
 
-//  several paired brackets
-const res8 = isPaired("{}[]"); //  .toEqual(true);
+// //  invalid when more than 11 digits
+// const res7 = () =>
+//   clean(
+//     "321234567890",
+//   ); /*  .toThrow(new Error("Must not be greater than 11 digits"),);  */
 
-//  paired and nested brackets
-const res9 = isPaired("([{}({}[])])"); //  .toEqual(true);
+// //  invalid with letters
+// const res8 = () =>
+//   clean("523-abc-7890"); /*  .toThrow new Error("Letters not permitted"), */
 
-//  unopened closing brackets
-const res10 = isPaired("{[)][]}"); //  .toEqual(false);
+// //  invalid with punctuations
+// const res9 = () =>
+//   clean("523-@:!-7890"); /*  .toThow new Error("Punctuations not permitted"),);  */
 
-//  unpaired and nested brackets
-const res11 = isPaired("([{])"); //  .toEqual(false);
+// //  invalid if area code starts with 0
+// const res10 = () =>
+//   clean(
+//     "(023) 456-7890",
+//   ); /*  .toThrow(new Error("Area code cannot start with zero"),);  */
 
-//  paired and wrong nested brackets
-const res12 = isPaired("[({]})"); //  .toEqual(false);
+// //  invalid if area code starts with 1
+// const res11 = () =>
+//   clean(
+//     "(123) 456-7890",
+//   ); /*  .toThrow(new Error("Area code cannot start with one"),); */
 
-//  paired and wrong nested brackets but innermost are correct
-const res13 = isPaired("[({}])"); //  .toEqual(false);
+// //  invalid if exchange code starts with 0
+// const res12 = () =>
+//   clean(
+//     "(223) 056-7890",
+//   ); /* .toThrow(new Error("Exchange code cannot start with zero"),);  */
 
-//  paired and incomplete brackets
-  const res14 = isPaired("{}[")  //  .toEqual(false);
+// //  invalid if exchange code starts with 1
+// const res13 = () =>
+//   clean(
+//     "(223) 156-7890",
+//   ); /*  .toThrow(new Error("Exchange code cannot start with one"),); */
 
-//  too many closing brackets
-  const res15 = isPaired("[]]")  //  .toEqual(false);
+// //  invalid if area code starts with 0 on valid 11-digit number
+// const res14 = () =>
+//   clean(
+//     "1 (023) 456-7890",
+//   ); /*  .toThrow(new Error("Area code cannot start with zero"),);  */
 
-//  early unexpected brackets
-  const res16 = isPaired(")()")  //  .toEqual(false);
+// //  invalid if area code starts with 1 on valid 11-digit number
+// const res15 = () =>
+//   clean(
+//     "1 (123) 456-7890",
+//   ); /*  .toThrow(new Error("Area code cannot start with one"),); */
 
-//  early mismatched brackets
-  const res17 = isPaired("{)()") //  .toEqual(false);
+// //  invalid if exchange code starts with 0 on valid 11-digit number
+// const res16 = () =>
+//   clean(
+//     "1 (223) 056-7890",
+//   ); /*  .toThrow(new Error("Exchange code cannot start with zero"),);  */
 
-//  math expression
-  const res18 = isPaired("(((185 + 223.85) * 15) - 543)/2")  //  .toEqual(true);
+// //  invalid if exchange code starts with 1 on valid 11-digit number
+// const res17 = () =>
+//   clean(
+//     "1 (223) 156-7890",
+//   ); /*  .toThrow(new Error("Exchange code cannot start with one"),); */
 
-//  complex latex expression
-  const res19 = isPaired("\\left(\\begin{array}{cc} \\frac{1}{3} & x\\\\ \\mathrm{e}^{x} &... x^2 \\end{array}\\right)",)  //  .toEqual(true);
-
-// ---------------------------------------------
+// --------------------------------------------------
 
 console.log(res0);
 console.log(res1);
 console.log(res2);
-console.log(res3);
-console.log(res4);
-console.log(res5);
-console.log(res6);
-console.log(res7);
-console.log(res8);
-console.log(res9);
-console.log(res10);
-console.log(res11);
-console.log(res12);
-console.log(res13);
-console.log(res14);
-console.log(res15);
-console.log(res16);
-console.log(res17);
-console.log(res18);
-console.log(res19);
+// console.log(res3());
+// console.log(res4());
+// console.log(res5);
+// console.log(res6);
+// console.log(res7());
+// console.log(res8());
+// console.log(res9());
+// console.log(res10());
+// console.log(res11());
+// console.log(res12());
+// console.log(res13());
+// console.log(res14());
+// console.log(res15());
+// console.log(res16());
+// console.log(res17());
